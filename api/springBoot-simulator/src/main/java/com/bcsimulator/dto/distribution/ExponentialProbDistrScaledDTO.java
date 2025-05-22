@@ -34,10 +34,6 @@ public class ExponentialProbDistrScaledDTO extends AbstractDistributionDTO {
     double scalingFactorX;
     double scalingFactorY;
     
-    public ExponentialProbDistrScaledDTO(double _rate, double _scalingX, double _scalingY){
-        rate = _rate; scalingFactorX = _scalingX; scalingFactorY = _scalingY;
-    }
-    
     @Override
     public double getProb(int time){
         double realTime = time*scalingFactorX;

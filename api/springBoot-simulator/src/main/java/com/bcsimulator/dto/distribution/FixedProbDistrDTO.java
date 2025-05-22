@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FixedProbDistrDTO extends AbstractDistributionDTO {
     int fixedTime;    // Fixed time used for the probability
-    int tolerance;    // Tolerable interval around the fixed time
 
     @Override
     public double getProb(int time) {
