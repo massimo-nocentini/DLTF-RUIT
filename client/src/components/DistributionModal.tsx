@@ -17,13 +17,7 @@ import {
 import {Line} from 'react-chartjs-2';
 import {CategoryScale, Chart, LinearScale, LineElement, LogarithmicScale, PointElement} from 'chart.js';
 import {DistributionParams, DistributionType} from "../types.ts";
-import {
-    exponential,
-    exponentialScaled, getProbFromParams,
-    lognormal,
-    lognormalScaled,
-    normal,
-    normalScaled
+import {getProbFromParams,
 } from "./distributionFormulas.ts";
 import {defaultParamsByDistribution} from "./distributionConfigs.ts";
 
@@ -56,8 +50,6 @@ const DistributionModal: React.FC<Props> = ({open, onClose, onConfirm, initialVa
         time: 1,
         ...initialValue
     });
-    // alert(JSON.stringify(params));
-    const [previewWindow, setPreviewWindow] = useState<number>(1000);
     const [yRange, setYRange] = useState<number>(1);
     const [yScaleType, setYScaleType] = useState<'linear' | 'logarithmic'>('linear');
     const [offsetStart, setOffsetStart] = useState<number>(0);
@@ -75,12 +67,6 @@ const DistributionModal: React.FC<Props> = ({open, onClose, onConfirm, initialVa
         scalingFactorY: { label: 'Scaling FactorY', min: 0.001, max: 3000, step: 0.001 },
         value: { label: 'Value', min: 0.00001, max: 1, step: 0.0001 },
     });
-    const sliderConfig = {
-        mean: { label: 'Mean', min: 1, max: duration, step: 1 },
-        std: { label: 'Std Dev', min: 0.1, max: 3000, step: 0.1 },
-        scalingFactorX: { label: 'Scaling FactorX', min: 0.1, max: 3000, step: 0.1 },
-        scalingFactorY: { label: 'Scaling FactorY', min: 0.001, max: 3000, step: 0.001 }
-    };
 
     const handleDistributionChange = (type: DistributionType) => {
         setDistribution(type);
@@ -163,90 +149,6 @@ const DistributionModal: React.FC<Props> = ({open, onClose, onConfirm, initialVa
         );
     };
 
-
-    // const renderSliderEditor = (key: keyof typeof sliderSettings) => {
-    //     const { label, min, max, step } = sliderSettings[key];
-    //
-    //     return (
-    //         <Box key={key} sx={{ my: 1, px: 2, py: 1, border: '1px solid #ddd', borderRadius: 1.5 }}>
-    //             <Grid container spacing={1} alignItems="center" wrap="nowrap">
-    //                 {/* Label sopra */}
-    //                 <Grid item sx={{ width: 150 }}>
-    //                     <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
-    //                         {label}
-    //                     </Typography>
-    //                 </Grid>
-    //
-    //                 {/* Slider con label sopra */}
-    //                 <Grid item sx={{ width: 400 }}>
-    //                     <Typography variant="caption" sx={{ mb: 0.5, display: 'block' }}>
-    //                         {params[key]}
-    //                     </Typography>
-    //                     <Slider
-    //                         min={min}
-    //                         max={max}
-    //                         step={step}
-    //                         value={params[key]}
-    //                         onChange={handleParamChange(key)}
-    //                         size="small"
-    //                     />
-    //                 </Grid>
-    //
-    //                 {/* Value */}
-    //                 <Grid item>
-    //                     <TextField
-    //                         size="small"
-    //                         label="Val"
-    //                         type="number"
-    //                         value={params[key]}
-    //                         onChange={(e) => {
-    //                             const value = parseFloat(e.target.value);
-    //                             setParams(prev => ({ ...prev, [key]: isNaN(value) ? prev[key] : value }));
-    //                         }}
-    //                         sx={{ width: 120 }}
-    //                     />
-    //                 </Grid>
-    //
-    //                 {/* Min */}
-    //                 <Grid item>
-    //                     <TextField
-    //                         size="small"
-    //                         label="Min"
-    //                         type="number"
-    //                         value={min}
-    //                         onChange={handleSliderSettingChange(key, 'min')}
-    //                         sx={{ width: 120 }}
-    //                     />
-    //                 </Grid>
-    //
-    //                 {/* Max */}
-    //                 <Grid item>
-    //                     <TextField
-    //                         size="small"
-    //                         label="Max"
-    //                         type="number"
-    //                         value={max}
-    //                         onChange={handleSliderSettingChange(key, 'max')}
-    //                         sx={{ width: 120 }}
-    //                     />
-    //                 </Grid>
-    //
-    //                 {/* Step */}
-    //                 <Grid item>
-    //                     <TextField
-    //                         size="small"
-    //                         label="Step"
-    //                         type="number"
-    //                         value={step}
-    //                         onChange={handleSliderSettingChange(key, 'step')}
-    //                         sx={{ width: 120 }}
-    //                     />
-    //                 </Grid>
-    //             </Grid>
-    //         </Box>
-    //     );
-    // };
-
     const handleSliderSettingChange = (key, field) => (e) => {
         const value = parseFloat(e.target.value);
         setSliderSettings(prev => ({
@@ -299,66 +201,8 @@ const DistributionModal: React.FC<Props> = ({open, onClose, onConfirm, initialVa
     };
 
 
-    const maxY = Math.max(...generateData().map(d => d.y));
+    // const maxY = Math.max(...generateData().map(d => d.y));
 
-    const handleInitialDistributionParams = (_distribution?: DistributionType) => {
-        let params: any = {}
-        switch (_distribution) {
-            case 'FIXED':
-                params = {fixedTime: 100}
-                break;
-            case 'UNIFORM':
-                params = {
-                    value: 0.0001
-                }
-                break;
-            case 'NORMAL':
-                params = {
-                    mean: 100,
-                    std: 10,
-                    scalingFactor: 0.1,
-                    amplitude: 1
-                };
-                break;
-            case 'NORMAL_SCALED':
-                params = {
-                    mean: 100,
-                    std: 10,
-                    scalingFactorX: 0.1,
-                    scalingFactorY: 0.1
-                }
-                break;
-            case 'LOGNORMAL':
-                params = {
-                    mean: 100, std: 10, scalingFactor: 0.1
-                }
-                break;
-            case 'LOGNORMAL_SCALED':
-                params = {
-                    mean: 100,
-                    std: 10,
-                    scalingFactorX: 0.1,
-                    scalingFactorY: 0.1
-                }
-                break;
-            case 'EXPONENTIAL':
-                params = {rate: 0.01, scalingFactor: 0.01}
-                break;
-            case 'EXPONENTIAL_SCALED':
-                params = {
-                    rate: 0.1,
-                    scalingFactorX: 0.01,
-                    scalingFactorY: 0.01,
-                }
-                break;
-        }
-        params = {
-            ...params, type: _distribution!
-        }
-        console.log("setting", params)
-
-        setParams(prevState => params)
-    };
     return (
         <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
             <DialogTitle>Configure Distribution</DialogTitle>
@@ -419,94 +263,6 @@ const DistributionModal: React.FC<Props> = ({open, onClose, onConfirm, initialVa
                     </Grid>
 
                     <Divider textAlign={'left'}>Distribution Parameters</Divider>
-
-                    {/*{distribution === 'FIXED' && (*/}
-                    {/*    <>*/}
-                    {/*        <Typography>Fixed Time: {params.fixedTime}</Typography>*/}
-                    {/*        <Slider min={0} max={previewWindow} value={params.fixedTime}*/}
-                    {/*                onChange={handleParamChange('fixedTime')}/>*/}
-                    {/*    </>*/}
-                    {/*)}*/}
-
-                    {/*{distribution === 'UNIFORM' && (*/}
-                    {/*    <>*/}
-                    {/*        <Typography>Value: {params.value}</Typography>*/}
-                    {/*        <Slider min={0.0001} max={1} step={0.0001} value={params.value}*/}
-                    {/*                onChange={handleParamChange('value')}/>*/}
-                    {/*    </>*/}
-                    {/*)}*/}
-
-                    {/*/!*{distribution === 'UNIFORM_CONTINUOUS_SCALED' && (*!/*/}
-                    {/*/!*    <>*!/*/}
-                    {/*/!*        <Typography>Min: {params.min}</Typography>*!/*/}
-                    {/*/!*        <Slider min={0} max={previewWindow} value={params.min} onChange={handleParamChange('min')}/>*!/*/}
-                    {/*/!*        <Typography>Max: {params.max}</Typography>*!/*/}
-                    {/*/!*        <Slider min={0} max={previewWindow} value={params.max} onChange={handleParamChange('max')}/>*!/*/}
-                    {/*/!*        <Typography>Scaling Factor: {params.scalingFactor}</Typography>*!/*/}
-                    {/*/!*        <Slider min={0.01} max={5} step={0.01} value={params.scalingFactor}*!/*/}
-                    {/*/!*                onChange={handleParamChange('scalingFactor')}/>*!/*/}
-                    {/*/!*    </>*!/*/}
-                    {/*/!*)}*!/*/}
-
-                    {/*{(distribution === 'NORMAL' || distribution === 'LOGNORMAL') && (*/}
-                    {/*    <>*/}
-                    {/*        <Typography>Mean: {params.mean}</Typography>*/}
-                    {/*        <Slider min={1} max={previewWindow} value={params.mean}*/}
-                    {/*                onChange={handleParamChange('mean')}/>*/}
-                    {/*        <Typography>Std Dev: {params.std}</Typography>*/}
-                    {/*        <Slider min={0.1} max={3000} step={0.1} value={params.std}*/}
-                    {/*                onChange={handleParamChange('std')}/>*/}
-                    {/*        <Typography>Scaling Factor: {params.scalingFactor}</Typography>*/}
-                    {/*        <Slider min={0.0001} max={5} step={0.0001} value={params.scalingFactor}*/}
-                    {/*                onChange={handleParamChange('scalingFactor')}/>*/}
-                    {/*    </>*/}
-                    {/*)}*/}
-
-                    {/*{(distribution === 'NORMAL_SCALED' || distribution === 'LOGNORMAL_SCALED') && (*/}
-                    {/*    <>*/}
-                    {/*        {Object.keys(defaultParamsByDistribution[distribution] || {}).map((key) =>*/}
-                    {/*            renderSliderEditor(key as keyof DistributionParams)*/}
-                    {/*        )}*/}
-                    {/*    </>*/}
-                    {/*)}*/}
-
-
-                    {/*/!*{distribution.includes('SCALED') && (*!/*/}
-                    {/*/!*    <>*!/*/}
-                    {/*/!*        <Typography>Scaling Factor: {params.scalingFactor}</Typography>*!/*/}
-                    {/*/!*        <Slider min={0.01} max={5} step={0.01} value={params.scalingFactor}*!/*/}
-                    {/*/!*                onChange={handleParamChange('scalingFactor')}/>*!/*/}
-                    {/*/!*        <Typography>Amplitude: {params.amplitude}</Typography>*!/*/}
-                    {/*/!*        <Slider min={0.01} max={5} step={0.01} value={params.amplitude}*!/*/}
-                    {/*/!*                onChange={handleParamChange('amplitude')}/>*!/*/}
-                    {/*/!*    </>*!/*/}
-                    {/*/!*)}*!/*/}
-
-                    {/*{distribution === ('EXPONENTIAL') && (*/}
-                    {/*    <>*/}
-                    {/*        <Typography>Rate (λ): {params.rate}</Typography>*/}
-                    {/*        <Slider min={0.0001} max={1} step={0.0001} value={params.rate}*/}
-                    {/*                onChange={handleParamChange('rate')}/>*/}
-                    {/*        <Typography>Scaling Factor: {params.scalingFactor}</Typography>*/}
-                    {/*        <Slider min={0.0001} max={5} step={0.0001} value={params.scalingFactor}*/}
-                    {/*                onChange={handleParamChange('scalingFactor')}/>*/}
-
-                    {/*    </>*/}
-                    {/*)}*/}
-
-                    {/*{distribution === ('EXPONENTIAL_SCALED') && (*/}
-                    {/*    <>*/}
-                    {/*        <Typography>Rate (λ): {params.rate}</Typography>*/}
-                    {/*        <Slider min={0.0001} max={1} step={0.0001} value={params.rate}*/}
-                    {/*                onChange={handleParamChange('rate')}/>*/}
-                    {/*        <Typography>Scaling FactorX: {params.scalingFactorX}</Typography>*/}
-                    {/*        <Slider min={0.01} max={5} step={0.01} value={params.scalingFactorX}*/}
-                    {/*                onChange={handleParamChange('scalingFactorX')}/>*/}
-                    {/*        <Typography>Scaling FactorY: {params.scalingFactorY}</Typography>*/}
-                    {/*        <Slider min={0.01} max={25} step={0.01} value={params.scalingFactorY}*/}
-                    {/*                onChange={handleParamChange('scalingFactorY')}/>*/}
-                    {/*    </>*/}
-                    {/*)}*/}
 
                     {
                         Object.keys(defaultParamsByDistribution[distribution] || {}).map((key) =>

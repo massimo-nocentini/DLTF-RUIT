@@ -21,42 +21,12 @@ import {
 import {Add, Close, ContentCopy, Delete, Edit, Refresh, Save, Send, Upload, Visibility,} from "@mui/icons-material";
 import axios from "axios";
 import DistributionModal from "./DistributionModal.tsx";
-import {DistributionType} from "../types.ts";
+import {DistributionType, SimulationConfig, Event} from "../types.ts";
 import {defaultParamsByDistribution} from "./distributionConfigs.ts";
 import {
-    exponential,
-    exponentialScaled, getProbFromParams,
-    lognormal,
-    lognormalScaled,
-    normal,
-    normalScaled
+    getProbFromParams,
 } from "./distributionFormulas.ts";
 import {Line} from "react-chartjs-2";
-
-type ProbabilityDistribution = {
-    type: DistributionType;
-    [key: string]: any;
-};
-
-export type SimulationConfig = {
-    entities: string[];
-    events: Event[];
-    name: string;
-    numAggr: number;
-    maxTime: number;
-    numRuns: number;
-};
-
-type Event = {
-    eventName: string;
-    eventDescription: string;
-    instanceOf: string | null;
-    dependOn: string | null;
-    probabilityDistribution: ProbabilityDistribution;
-    gasCost: number;
-    maxProbabilityMatches: number | null;
-    relatedEvents: string[] | null;
-};
 
 const durationOptions = [
     {value: 86400, label: "1 Day"},

@@ -68,3 +68,28 @@ export interface DistributionParams {
     rate?: number;
     time?: number;
 }
+
+export type ProbabilityDistribution = {
+    type: DistributionType;
+    [key: string]: any;
+};
+
+export type SimulationConfig = {
+    entities: string[];
+    events: Event[];
+    name: string;
+    numAggr: number;
+    maxTime: number;
+    numRuns: number;
+};
+
+export type Event = {
+    eventName: string;
+    eventDescription: string;
+    instanceOf: string | null;
+    dependOn: string | null;
+    probabilityDistribution: ProbabilityDistribution;
+    gasCost: number;
+    maxProbabilityMatches: number | null;
+    relatedEvents: string[] | null;
+};
