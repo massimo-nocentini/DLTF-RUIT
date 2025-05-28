@@ -14,7 +14,8 @@ public class ResultsAggregated {
     Map<String, long[]> counters;
     // Maps the event name to an array of linked lists, one for each run
     Map<String, LinkedList<Integer>[]> entities;
-    // Counter for event E -> run -> entityTime of I (instance) -> how many times event E has been triggered
+    Map<String, LinkedList<Integer>[]> aggregatedEntities;
+    // Counter for event E -> run -> entityTime of I (instance) → how many times event E has been triggered
     private final Map<String, Map<Integer, Map<Integer, Integer>>> dependencyTriggerCounts = new HashMap<>();
 
     final String gasTotal = "gasTotal";
@@ -25,6 +26,7 @@ public class ResultsAggregated {
         this.results = new HashMap<>();
         this.counters = new HashMap<>();
         this.entities = new HashMap<>();
+        this.aggregatedEntities = new HashMap<>();
         this.results.put(gasTotal, new long[simParams.getNumRuns()]);
         simParams.getEvents().forEach(this::initEventStructures);
         simParams.getEntities().forEach(this::initEntities);
@@ -36,6 +38,7 @@ public class ResultsAggregated {
      * @param time
      */
     public void compute(int time) {
+
         // Reset di tutti i valori
         for (Map.Entry<String, long[]> entry : results.entrySet()) {
             Arrays.fill(entry.getValue(), 0L);
@@ -48,6 +51,8 @@ public class ResultsAggregated {
 
 
         for (int i = 0; i < simParams.getNumRuns(); i++) {
+//            resetEntityCountsForRun(i); // ← resetta i contatori per il run corrente
+
             for (int j = 0; j < simParams.getNumAggr(); j++) {
                 randomDouble = splittableRandom.nextDouble();
                 timeInner = time + j;
@@ -124,6 +129,7 @@ public class ResultsAggregated {
             if (randomDouble <= baseProb) {
                 if (instanceOf != null) {
                     this.entities.get(toCamelCase(instanceOf))[run].add(timeInner);
+                    this.aggregatedEntities.get(toCamelCase(instanceOf))[run].add(timeInner);
                 }
                 addGas(run, eventName, gasCost);
                 counters.get(eventKey)[run]++;
@@ -142,6 +148,7 @@ public class ResultsAggregated {
 
                         if (instanceOf != null) {
                             this.entities.get(toCamelCase(instanceOf))[run].add(timeInner);
+                            this.aggregatedEntities.get(toCamelCase(instanceOf))[run].add(timeInner);
                         }
                         addGas(run, eventName, gasCost);
                         incrementEntityCount(eventKey, run, entityTime);
@@ -150,7 +157,6 @@ public class ResultsAggregated {
             }
         }
     }
-
 
 
     private void addGas(int runIndex, String eventName, long gasValue) {
@@ -177,6 +183,7 @@ public class ResultsAggregated {
         // Initializes the results array for the event
         if (entityName != null) {
             this.entities.computeIfAbsent(toCamelCase(entityName), k -> createLinkedListArray(simParams.getNumRuns()));
+            this.aggregatedEntities.computeIfAbsent(toCamelCase(entityName), k -> createLinkedListArray(simParams.getNumRuns()));
         }
     }
 
@@ -224,6 +231,57 @@ public class ResultsAggregated {
     }
 
 
+    /***
+     * Generates a report with the size of the dynamic arrays used
+     * @param lists
+     * @return
+     */
+    public Map<String, String> generateAggregatedInstanceSizeReportForValue(LinkedList<Integer>[] lists) {
+        Map<String, String> result = new HashMap<>();
+        int numSteps = simParams.getNumRuns();
+        int totalSize = 0;
+//        int minSize = Integer.MAX_VALUE;
+//        int maxSize = Integer.MIN_VALUE;
+
+        // Prima passata: calcolo tot, min, max
+        int[] sizes = new int[numSteps];  // salvo le size per riuso nel calcolo della std dev
+        for (int i = 0; i < numSteps; i++) {
+            LinkedList<Integer> currentList = lists[i];
+            int size = (currentList != null) ? currentList.size() : 0;
+            sizes[i] = size;
+
+            totalSize += size;
+//            if (size < minSize) minSize = size;
+//            if (size > maxSize) maxSize = size;
+        }
+
+//        double avgSize = (double) totalSize / numSteps;
+//
+//        // Seconda passata: calcolo deviazione standard
+//        double sumSquaredDiffs = 0.0;
+//        for (int i = 0; i < numSteps; i++) {
+//            sumSquaredDiffs += Math.pow(sizes[i] - avgSize, 2);
+//        }
+//        double stdDev = Math.sqrt(sumSquaredDiffs / numSteps);
+
+        // Inserisco tutto nel risultato
+        result.put("totalAggrSize", Integer.toString(totalSize));
+//        result.put("avgSize", Double.toString(avgSize));
+//        result.put("minSize", Integer.toString(minSize));
+//        result.put("maxSize", Integer.toString(maxSize));
+//        result.put("stdDev", Double.toString(stdDev));
+
+        // Reset solo per il totalSize dopo averlo salvato
+        for (LinkedList<Integer> list : lists) {
+            if (list != null) {
+                list.clear();
+            }
+        }
+
+        return result;
+    }
+
+
     /**
      * Creates an array of linked lists with the specified size
      *
@@ -241,12 +299,10 @@ public class ResultsAggregated {
     /**
      * Generates a CSV header from the internal maps
      *
-     * @param instances
-     * @param results
      * @param separator
      * @return
      */
-    private String generateCSVHeaderWithStats(Map<String, ?> results, Map<String, ?> instances, String separator) {
+    private String generateCSVHeaderWithStats(String separator) {
         int count = 2;
         // For each event creates a map entry with the Event name
         List<String> headers = new ArrayList<>();
@@ -265,7 +321,7 @@ public class ResultsAggregated {
             count++;
         }
         // Per ogni chiave di instances genero le 4 intestazioni
-        for (String key : instances.keySet()) {
+        for (String key : entities.keySet()) {
             headers.add(toCamelCase("tot_" + key + "(" + count + ")"));
             count++;
             headers.add(toCamelCase("avg_" + key + "(" + count + ")"));
@@ -275,6 +331,11 @@ public class ResultsAggregated {
             headers.add(toCamelCase("max_" + key + "(" + count + ")"));
             count++;
             headers.add(toCamelCase("std_" + key + "(" + count + ")"));
+            count++;
+        }
+        // Per ogni chiave di instances genero 1 intestazione per contare le istanze totali di ogni aggregazione
+        for (String key : aggregatedEntities.keySet()) {
+            headers.add(toCamelCase("totAggr_" + key + "(" + count + ")"));
             count++;
         }
 
@@ -303,6 +364,12 @@ public class ResultsAggregated {
             headers.add(stats.get("maxSize"));
             headers.add(stats.get("stdDev"));
         }
+
+        for (String key : aggregatedEntities.keySet()) {
+            Map<String, String> stats = generateAggregatedInstanceSizeReportForValue(aggregatedEntities.get(key));
+            headers.add(stats.get("totalAggrSize"));
+        }
+
         return String.join(separator, headers);
     }
 
@@ -314,7 +381,7 @@ public class ResultsAggregated {
      * @return
      */
     public String generateCSVHeader(String separator) {
-        return "time" + separator + generateCSVHeaderWithStats(results, entities, separator);
+        return "time" + separator + generateCSVHeaderWithStats(separator);
     }
 
     public static String toCamelCase(String input) {
@@ -355,4 +422,10 @@ public class ResultsAggregated {
     private void incrementEntityCount(String eventKey, int run, int entityTime) {
         dependencyTriggerCounts.get(eventKey).get(run).merge(entityTime, 1, Integer::sum);
     }
+
+//    private void resetEntityCountsForRun(int run) {
+//        for (Map<Integer, Map<Integer, Integer>> runMap : dependencyTriggerCounts.values()) {
+//            runMap.remove(run);
+//        }
+//    }
 }
