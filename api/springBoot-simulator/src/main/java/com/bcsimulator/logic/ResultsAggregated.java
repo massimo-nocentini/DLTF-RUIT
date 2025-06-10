@@ -419,8 +419,11 @@ public class ResultsAggregated {
         return current < maxProbabilityMatches;
     }
 
-    private void incrementEntityCount(String eventKey, int run, int entityTime) {
-        dependencyTriggerCounts.get(eventKey).get(run).merge(entityTime, 1, Integer::sum);
+    public void incrementEntityCount(String event, int run, int entity) {
+        dependencyTriggerCounts
+                .computeIfAbsent(event, k -> new HashMap<>())
+                .computeIfAbsent(run, k -> new HashMap<>())
+                .merge(entity, 1, Integer::sum);
     }
 
 //    private void resetEntityCountsForRun(int run) {
