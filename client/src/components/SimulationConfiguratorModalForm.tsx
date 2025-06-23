@@ -9,7 +9,6 @@ import {
     DialogContent,
     DialogTitle,
     Divider,
-    Grid as MuiGrid,
     IconButton,
     InputAdornment,
     MenuItem,
@@ -19,13 +18,33 @@ import {
     Tooltip,
     Typography,
 } from "@mui/material";
-import {Add, Close, ContentCopy, Delete, Edit, Refresh, Save, Send, Upload, Visibility,} from "@mui/icons-material";
+import {Add, Close, ContentCopy, Delete, Edit, Refresh, Save, Send, Upload, Visibility, Settings, Group, EventNote} from "@mui/icons-material";
 import axios from "axios";
 import DistributionModal from "./DistributionModal.tsx";
 import {distributionTypes, Event, EventDependency, ProbabilityDistribution, SimulationConfig} from "../types.ts";
 import {defaultParamsByDistribution} from "./distributionConfigs.ts";
 import {getProbFromParams,} from "./distributionFormulas.ts";
 import {Line} from "react-chartjs-2";
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip as ChartTooltip,
+    Legend
+} from 'chart.js';
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    ChartTooltip,
+    Legend
+);
 
 const durationOptions = [
     {value: 86400, label: "1 Day"},
@@ -60,72 +79,72 @@ const getProbabilityDistribution = (event: Event) => {
         const type = dep.probabilityDistribution.type;
         const dist = dep.probabilityDistribution;
 
-        switch (type) {
-            case "FIXED":
-                return {
-                    type,
-                    fixedTime: dist.fixedTime,
-                };
-            case "UNIFORM":
-                return {
-                    type,
-                    value: dist.value,
-                };
-            case "NORMAL_SCALED":
-            case "LOGNORMAL_SCALED":
-                return {
-                    type,
-                    mean: dist.mean,
-                    std: dist.std,
-                    scalingFactorX: dist.scalingFactorX,
-                    scalingFactorY: dist.scalingFactorY,
-                };
-            case "NORMAL":
-            case "LOGNORMAL":
-                return {
-                    type,
-                    mean: dist.mean,
-                    std: dist.std,
-                    scalingFactor: dist.scalingFactor,
-                };
-            case "EXPONENTIAL_SCALED":
-                return {
-                    type,
-                    rate: dist.rate,
-                    scalingFactorX: dist.scalingFactorX,
-                    scalingFactorY: dist.scalingFactorY,
-                };
-            case "EXPONENTIAL":
-                return {
-                    type,
-                    rate: dist.rate,
-                    scalingFactor: dist.scalingFactor,
-                };
-            case "BASS":
-            case "BASS_CUMULATIVE":
-                return {
-                    type,
-                    p: dist.p,
-                    q: dist.q,
-                    scalingFactor: dist.scalingFactor,
-                };
-            case "GARTNER_SASAKI":
-                return {
-                    type,
-                    A: dist.A,
-                    B: dist.B,
-                    C: dist.C,
-                    D: dist.D,
-                    E: dist.E,
-                    F: dist.F,
-                    G: dist.G,
-                    H: dist.H,
-                    I: dist.I,
-                    scalingFactor: dist.scalingFactor,
-                };
-            default:
-                return {};
-        }
+    switch (type) {
+        case "FIXED":
+            return {
+                type,
+                fixedTime: dist.fixedTime,
+            };
+        case "UNIFORM":
+            return {
+                type,
+                value: dist.value,
+            };
+        case "NORMAL_SCALED":
+        case "LOGNORMAL_SCALED":
+            return {
+                type,
+                mean: dist.mean,
+                std: dist.std,
+                scalingFactorX: dist.scalingFactorX,
+                scalingFactorY: dist.scalingFactorY,
+            };
+        case "NORMAL":
+        case "LOGNORMAL":
+            return {
+                type,
+                mean: dist.mean,
+                std: dist.std,
+                scalingFactor: dist.scalingFactor,
+            };
+        case "EXPONENTIAL_SCALED":
+            return {
+                type,
+                rate: dist.rate,
+                scalingFactorX: dist.scalingFactorX,
+                scalingFactorY: dist.scalingFactorY,
+            };
+        case "EXPONENTIAL":
+            return {
+                type,
+                rate: dist.rate,
+                scalingFactor: dist.scalingFactor,
+            };
+        case "BASS":
+        case "BASS_CUMULATIVE":
+            return {
+                type,
+                p: dist.p,
+                q: dist.q,
+                scalingFactor: dist.scalingFactor,
+            };
+        case "GARTNER_SASAKI":
+            return {
+                type,
+                A: dist.A,
+                B: dist.B,
+                C: dist.C,
+                D: dist.D,
+                E: dist.E,
+                F: dist.F,
+                G: dist.G,
+                H: dist.H,
+                I: dist.I,
+                scalingFactor: dist.scalingFactor,
+            };
+        default:
+            return {};
+    }
     });
 };
 
@@ -224,7 +243,7 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                 if (depField.startsWith("probabilityDistribution.")) {
                     const paramName = depField.split(".")[1];
                     (updatedEvent.dependencies[parseInt(depIndex)].probabilityDistribution as any)[paramName] = value;
-                } else {
+        } else {
                     (updatedEvent.dependencies[parseInt(depIndex)] as any)[depField] = value;
                 }
             }
@@ -370,25 +389,36 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                     const {type} = dep.probabilityDistribution;
                     const params = dep.probabilityDistribution;
 
-                    const getProb = (t: number): number =>
-                        getProbFromParams(type, t, params);
+                const getProb = (t: number): number =>
+                    getProbFromParams(type, t, params);
 
-                    const step = totalDuration / PREVIEW_POINTS;
-                    const data = Array.from({length: PREVIEW_POINTS + 1}, (_, i) => {
-                        const t = i * step;
-                        return {x: t, y: Math.max(getProb(t), 1e-6)};
-                    });
+                const step = totalDuration / PREVIEW_POINTS;
+                const data = Array.from({length: PREVIEW_POINTS + 1}, (_, i) => {
+                    const t = i * step;
+                    return {x: t, y: Math.max(getProb(t), 1e-6)};
+                });
 
-                    return {
+                return {
                         label: `${event.eventName || "Event " + (idx + 1)} - Dep ${depIdx + 1}`,
-                        data,
-                        borderWidth: 1,
-                        pointRadius: 0,
-                        fill: false,
-                    };
+                    data,
+                    borderWidth: 1,
+                    pointRadius: 0,
+                    fill: false,
+                };
                 }) || [];
             })
             .flat();
+    };
+
+    // Funzione per generare un colore consistente da una stringa
+    const getColorFromString = (str: string) => {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        // Usa HSL per avere colori sempre vivaci
+        const hue = Math.abs(hash % 360);  // Valore tra 0 e 359
+        return `hsl(${hue}, 70%, 50%)`;    // Saturazione e luminosità fisse per colori vivaci
     };
 
     return (
@@ -397,115 +427,131 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                 Simulation
             </Button>
 
-            <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="md">
-                <DialogTitle>
-                    <Stack direction="row" justifyContent="space-between" alignItems="center">
-                        <Typography variant="h6">Simulation Configurator</Typography>
-                        <IconButton onClick={() => setOpen(false)}>
-                            <Close/>
-                        </IconButton>
-                    </Stack>
-                </DialogTitle>
-
-                <DialogContent dividers>
-                    {configPreview ? (
-                        <Box>
-                            <Typography variant="subtitle1" gutterBottom>
-                                Configuration Preview
-                            </Typography>
-                            <pre style={{whiteSpace: 'pre-wrap'}}>
-                                {JSON.stringify(configPreview, null, 2)}
-                            </pre>
-                            <Button
-                                onClick={() => setConfigPreview(null)}
-                                color="primary"
-                                variant="outlined"
-                                sx={{mt: 2}}
-                            >
-                                Edit
-                            </Button>
-                            <Button
-                                onClick={() => downloadConfig(configPreview)}
-                                color="primary"
-                                variant="outlined"
-                                sx={{mt: 2, ml: 2}}
-                                startIcon={<ContentCopy/>}
-                            >
-                                Download
-                            </Button>
-                        </Box>
-                    ) : (
-                        <Stack spacing={2}>
-                            <Paper elevation={0} sx={{p: 2}}>
+            <Dialog
+                open={open}
+                onClose={() => setOpen(false)}
+                maxWidth="lg"
+                fullWidth
+                PaperProps={{
+                    sx: { 
+                        minHeight: '80vh',
+                        maxHeight: '90vh',
+                        width: '90%'
+                    }
+                }}
+            >
+                <DialogTitle>Configure Simulation</DialogTitle>
+                <DialogContent>
+                    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+                        {configPreview ? (
+                            <Box>
                                 <Typography variant="subtitle1" gutterBottom>
+                                    Configuration Preview
+                                </Typography>
+                                <pre style={{whiteSpace: 'pre-wrap'}}>
+                                    {JSON.stringify(configPreview, null, 2)}
+                                </pre>
+                                        <Button
+                                    onClick={() => setConfigPreview(null)}
+                                    color="primary"
+                                    variant="outlined"
+                                    sx={{mt: 2}}
+                                        >
+                                    Edit
+                                        </Button>
+                                        <Button
+                                    onClick={() => downloadConfig(configPreview)}
+                                    color="primary"
+                                    variant="outlined"
+                                    sx={{mt: 2, ml: 2}}
+                                    startIcon={<ContentCopy/>}
+                                        >
+                                    Download
+                                        </Button>
+                            </Box>
+                        ) : (
+                            <Stack spacing={0.5}>
+                                <Paper elevation={0} sx={{p: 1.5}}>
+                                    <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
+                                        <Settings fontSize="small" color="action" />
+                                        <Typography variant="subtitle1">
                                     Basic Configuration
                                 </Typography>
-                                <Stack spacing={2}>
-                                    <TextField
-                                        label="Simulation Name"
-                                        required
-                                        error={!name}
-                                        helperText={!name ? "Name is required" : " "}
-                                        size="small"
-                                        fullWidth
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                    />
-                                    <TextField
-                                        label="Duration"
-                                        select
-                                        required
-                                        error={!duration}
-                                        helperText={!duration ? "Duration is required" : " "}
-                                        size="small"
-                                        value={duration.toString()}
-                                        onChange={(e) => handleDurationChange(e.target.value)}
-                                    >
-                                        {durationOptions.map((opt) => (
-                                            <MenuItem key={opt.value} value={opt.value.toString()}>
-                                                {opt.label}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
-                                    <TextField
-                                        label="Aggregation"
-                                        select
-                                        required
-                                        error={!aggregation}
-                                        helperText={!aggregation ? "Aggregation is required" : " "}
-                                        fullWidth
-                                        size="small"
-                                        value={aggregation.toString()}
-                                        onChange={(e) => handleAggregationChange(e.target.value)}
-                                    >
-                                        {aggregationOptions.map((opt) => (
-                                            <MenuItem key={opt.value} value={opt.value.toString()}>
-                                                {opt.label}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
-                                    <TextField
-                                        label="Number of Runs"
-                                        required
-                                        error={!numRuns}
-                                        helperText={!numRuns ? "Number of runs is required" : " "}
-                                        type="number"
-                                        size="small"
-                                        fullWidth
-                                        value={numRuns}
-                                        onChange={(e) => setNumRuns(e.target.value)}
-                                    />
-                                </Stack>
+                                    </Stack>
+                                    <Stack spacing={1.5}>
+                                        <TextField
+                                            label="Simulation Name"
+                                            required
+                                            error={!name}
+                                            helperText={!name ? "Name is required" : " "}
+                                            size="small"
+                                            fullWidth
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                        />
+                                        <Box sx={{ display: 'flex', gap: 2 }}>
+                                        <TextField
+                                            label="Duration"
+                                            select
+                                            required
+                                                error={!duration}
+                                                helperText={!duration ? "Duration is required" : " "}
+                                            size="small"
+                                                fullWidth
+                                                value={duration.toString()}
+                                                onChange={(e) => handleDurationChange(e.target.value)}
+                                        >
+                                            {durationOptions.map((opt) => (
+                                                    <MenuItem key={opt.value} value={opt.value.toString()}>
+                                                    {opt.label}
+                                                </MenuItem>
+                                            ))}
+                                        </TextField>
+                                        <TextField
+                                            label="Aggregation"
+                                            select
+                                                required
+                                                error={!aggregation}
+                                                helperText={!aggregation ? "Aggregation is required" : " "}
+                                            fullWidth
+                                            size="small"
+                                                value={aggregation.toString()}
+                                                onChange={(e) => handleAggregationChange(e.target.value)}
+                                        >
+                                            {aggregationOptions.map((opt) => (
+                                                    <MenuItem key={opt.value} value={opt.value.toString()}>
+                                                    {opt.label}
+                                                </MenuItem>
+                                            ))}
+                                        </TextField>
+                                        <TextField
+                                            label="Number of Runs"
+                                            required
+                                                error={!numRuns}
+                                                helperText={!numRuns ? "Number of runs is required" : " "}
+                                                type="number"
+                                            size="small"
+                                                fullWidth
+                                            value={numRuns}
+                                                onChange={(e) => setNumRuns(e.target.value)}
+                                        />
+                                        </Box>
+                                    </Stack>
                             </Paper>
 
-                            <Paper elevation={0} sx={{p: 2}}>
-                                <Stack spacing={2}>
-                                    <Typography variant="subtitle1">Entities</Typography>
-                                    <Stack direction="row" spacing={1} alignItems="center">
+                                <Paper elevation={0} sx={{p: 1.5}}>
+                                    <Stack direction="row" spacing={2} alignItems="center">
+                                        <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 'fit-content' }}>
+                                            <Group fontSize="small" color="action" />
+                                            <Typography variant="subtitle1">
+                                    Entities
+                                </Typography>
+                                        </Stack>
                                         <TextField
                                             label="Entity Name"
                                             size="small"
                                             value={entityInput}
+                                            sx={{ width: 200 }}
                                             onChange={(e) => setEntityInput(e.target.value)}
                                             onKeyPress={(e) => {
                                                 if (e.key === 'Enter') {
@@ -526,8 +572,7 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                                 ),
                                             }}
                                         />
-                                    </Stack>
-                                    <Box sx={{display: "flex", flexWrap: "wrap", gap: 1}}>
+                                        <Box sx={{display: "flex", flexWrap: "wrap", gap: 0.5, flex: 1}}>
                                         {entities.map((entity, index) => (
                                             <Chip
                                                 key={index}
@@ -540,9 +585,14 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                 </Stack>
                             </Paper>
 
-                            <Paper elevation={0} sx={{p: 2}}>
+                                <Paper elevation={0} sx={{p: 1.5, mt: 1}}>
                                 <Stack direction="row" justifyContent="space-between" alignItems="center">
-                                    <Typography variant="subtitle1">Events</Typography>
+                                        <Stack direction="row" spacing={1} alignItems="center">
+                                            <EventNote fontSize="small" color="action" />
+                                            <Typography variant="subtitle1">
+                                                Events
+                                            </Typography>
+                                        </Stack>
                                     <Button
                                         variant="outlined"
                                         size="small"
@@ -555,9 +605,9 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                 <Divider sx={{my: 2}}/>
                                 <Stack spacing={2}>
                                     {events.map((event, index) => (
-                                        <Paper key={index} variant="outlined" sx={{p: 1}}>
-                                            <Stack spacing={1}>
-                                                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                            <Paper key={index} variant="outlined" sx={{p: 2}}>
+                                                <Stack spacing={2}>
+                                                    <Stack direction="row" justifyContent="space-between" alignItems="center">
                                                     <Typography variant="subtitle2">
                                                         Event {index + 1}{event.eventName && `: ${event.eventName}`}
                                                     </Typography>
@@ -570,218 +620,364 @@ const SimulationConfiguratorModalForm: React.FC = () => {
                                                     </IconButton>
                                                 </Stack>
 
-                                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                                    <MuiGrid container spacing={2}>
-                                                        <MuiGrid item xs={12}>
-                                                            <TextField
-                                                                label="Event Name"
-                                                                required
-                                                                error={!event.eventName}
-                                                                helperText={!event.eventName ? "Event name is required" : " "}
-                                                                size="small"
-                                                                fullWidth
-                                                                value={event.eventName}
-                                                                onChange={(e) => handleEventChange(index, "eventName", e.target.value)}
-                                                            />
-                                                        </MuiGrid>
-                                                        <MuiGrid item xs={12}>
-                                                            <TextField
-                                                                label="Description"
-                                                                size="small"
-                                                                fullWidth
-                                                                multiline
-                                                                rows={2}
-                                                                value={event.description}
-                                                                onChange={(e) => handleEventChange(index, "description", e.target.value)}
-                                                            />
-                                                        </MuiGrid>
-                                                        <MuiGrid item xs={12}>
-                                                            <TextField
-                                                                label="Gas Cost"
-                                                                required
-                                                                error={!event.gasCost || event.gasCost <= 0}
-                                                                helperText={(!event.gasCost || event.gasCost <= 0) ? "Gas Cost is required" : " "}
-                                                                type="number"
-                                                                size="small"
-                                                                fullWidth
-                                                                value={event.gasCost}
-                                                                onChange={(e) => handleEventChange(index, "gasCost", Number(e.target.value))}
-                                                            />
-                                                        </MuiGrid>
-                                                        <MuiGrid item xs={12}>
-                                                            <TextField
-                                                                label="Instance Of"
-                                                                select
-                                                                size="small"
-                                                                fullWidth
-                                                                value={event.instanceOf || ""}
-                                                                onChange={(e) => handleEventChange(index, "instanceOf", e.target.value || null)}
-                                                            >
-                                                                <MenuItem value="">None</MenuItem>
-                                                                {entities.map((entity, idx) => (
-                                                                    <MenuItem key={idx} value={entity}>
-                                                                        {entity}
-                                                                    </MenuItem>
-                                                                ))}
-                                                            </TextField>
-                                                        </MuiGrid>
-                                                    </MuiGrid>
+                                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                                                            <Box sx={{ width: 'calc(33.33% - 16px)' }}>
+                                                <TextField
+                                                    label="Event Name"
+                                                    required
+                                                    error={!event.eventName}
+                                                    helperText={!event.eventName ? "Event name is required" : " "}
+                                                    size="small"
+                                                    fullWidth
+                                                    value={event.eventName}
+                                                    onChange={(e) => handleEventChange(index, "eventName", e.target.value)}
+                                                                    sx={{ minWidth: '200px' }}
+                                                                />
+                                                            </Box>
+                                                            <Box sx={{ width: 'calc(33.33% - 16px)' }}>
+                                                <TextField
+                                                    label="Gas Cost"
+                                                    required
+                                                    error={!event.gasCost || event.gasCost <= 0}
+                                                    helperText={(!event.gasCost || event.gasCost <= 0) ? "Gas Cost is required" : " "}
+                                                    type="number"
+                                                    size="small"
+                                                    fullWidth
+                                                    value={event.gasCost}
+                                                    onChange={(e) => handleEventChange(index, "gasCost", Number(e.target.value))}
+                                                                    sx={{ minWidth: '200px' }}
+                                                />
+                                                            </Box>
+                                                            <Box sx={{ width: 'calc(33.33% - 16px)' }}>
+                                                    <TextField
+                                                        label="Instance Of"
+                                                        select
+                                                        size="small"
+                                                        fullWidth
+                                                        value={event.instanceOf || ""}
+                                                        onChange={(e) => handleEventChange(index, "instanceOf", e.target.value || null)}
+                                                                    sx={{ minWidth: '200px' }}
+                                                    >
+                                                        <MenuItem value="">None</MenuItem>
+                                                        {entities.map((entity, idx) => (
+                                                            <MenuItem key={idx} value={entity}>
+                                                                {entity}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </TextField>
+                                                            </Box>
+                                                        </Box>
 
-                                                    <Paper elevation={0} sx={{ p: 1, bgcolor: 'background.default' }}>
-                                                        <Stack spacing={2}>
-                                                            <Stack direction="row" justifyContent="space-between" alignItems="center">
-                                                                <Typography variant="subtitle2">Dependencies</Typography>
-                                                                <Button
-                                                                    variant="outlined"
+                                                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                                                            <Box sx={{ width: 'calc(33.33% - 16px)' }}>
+                                                                <TextField
+                                                                    label="Description"
                                                                     size="small"
-                                                                    startIcon={<Add />}
-                                                                    onClick={() => handleAddDependency(index)}
-                                                                >
-                                                                    Add Dependency
-                                                                </Button>
-                                                            </Stack>
-                                                            
-                                                            {event.dependencies?.map((dep, depIndex) => (
-                                                                <Paper key={depIndex} variant="outlined" sx={{ p: 1 }}>
-                                                                    <Stack spacing={1}>
-                                                                        <Stack direction="row" justifyContent="space-between" alignItems="center">
-                                                                            <Typography variant="subtitle2">
-                                                                                Dependency {depIndex + 1}
-                                                                            </Typography>
-                                                                            <IconButton
-                                                                                size="small"
-                                                                                onClick={() => handleRemoveDependency(index, depIndex)}
-                                                                                color="error"
-                                                                            >
-                                                                                <Delete fontSize="small" />
-                                                                            </IconButton>
-                                                                        </Stack>
+                                                                    fullWidth
+                                                                    multiline
+                                                                    rows={2}
+                                                                    value={event.description}
+                                                                    onChange={(e) => handleEventChange(index, "description", e.target.value)}
+                                                                    sx={{ minWidth: '400px' }}
+                                                                />
+                                                            </Box>
+                                                        </Box>
 
-                                                                        <TextField
-                                                                            label="Depends On"
-                                                                            select
-                                                                            size="small"
-                                                                            fullWidth
-                                                                            value={dep.dependOn || ""}
-                                                                            onChange={(e) => handleEventChange(index, `dependencies[${depIndex}].dependOn`, e.target.value || null)}
-                                                                        >
-                                                                            <MenuItem value="">None</MenuItem>
-                                                                            {entities.map((entity, idx) => (
-                                                                                <MenuItem key={idx} value={entity}>
-                                                                                    {entity}
-                                                                                </MenuItem>
-                                                                            ))}
-                                                                        </TextField>
-
-                                                                        <TextField
-                                                                            label="Max Probability Matches"
-                                                                            size="small"
-                                                                            fullWidth
-                                                                            value={dep.maxProbabilityMatches || ""}
-                                                                            onChange={(e) => handleEventChange(index, `dependencies[${depIndex}].maxProbabilityMatches`, e.target.value)}
-                                                                            helperText="Use '#entityName' to reference an entity count"
-                                                                        />
-
-                                                                        <TextField
-                                                                            label="Distribution Type"
-                                                                            select
-                                                                            required
-                                                                            error={!dep.probabilityDistribution.type}
-                                                                            helperText={!dep.probabilityDistribution.type ? "Distribution Type is required" : " "}
-                                                                            size="small"
-                                                                            fullWidth
-                                                                            value={dep.probabilityDistribution.type}
-                                                                            onChange={(e) => {
-                                                                                const selectedType = e.target.value;
-                                                                                handleEventChange(index, `dependencies[${depIndex}].probabilityDistribution.type`, selectedType);
-                                                                                // Open the distribution modal for this dependency
-                                                                                const updatedModals = [...openDistributions];
-                                                                                if (!Array.isArray(updatedModals[index])) {
-                                                                                    updatedModals[index] = [];
-                                                                                }
-                                                                                updatedModals[index][depIndex] = true;
-                                                                                setOpenDistributions(updatedModals);
-                                                                            }}
-                                                                        >
-                                                                            {distributionTypes.map((opt) => (
-                                                                                <MenuItem key={opt.value} value={opt.value}>
-                                                                                    {opt.label}
-                                                                                </MenuItem>
-                                                                            ))}
-                                                                        </TextField>
-
-                                                                        {/* Display current distribution parameters */}
-                                                                        {dep.probabilityDistribution.type && (
-                                                                            <Box sx={{ mt: 2 }}>
-                                                                                <Typography variant="subtitle2" gutterBottom>
-                                                                                    Distribution Parameters:
+                                                        <Paper elevation={0} sx={{ p: 2, bgcolor: 'background.default' }}>
+                                                            <Stack spacing={2}>
+                                                                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                                                    <Typography variant="subtitle2">Dependencies</Typography>
+                                                                    <Button
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                        startIcon={<Add />}
+                                                                        onClick={() => handleAddDependency(index)}
+                                                                    >
+                                                                        Add Dependency
+                                                                    </Button>
+                                                                </Stack>
+                                                                
+                                                                {event.dependencies?.map((dep, depIndex) => (
+                                                                    <Paper key={depIndex} variant="outlined" sx={{ p: 2 }}>
+                                                                        <Stack spacing={2}>
+                                                                            <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                                                                <Typography variant="subtitle2">
+                                                                                    Dependency {depIndex + 1}
                                                                                 </Typography>
-                                                                                <Stack spacing={2}>
-                                                                                    {Object.entries(dep.probabilityDistribution)
-                                                                                        .filter(([key]) => key !== 'type')
-                                                                                        .map(([key, value]) => (
-                                                                                            <TextField
-                                                                                                key={key}
-                                                                                                label={key}
-                                                                                                size="small"
-                                                                                                type="number"
-                                                                                                value={value}
-                                                                                                onChange={(e) => {
-                                                                                                    const newValue = e.target.value;
-                                                                                                    const updatedDistribution = {
-                                                                                                        ...dep.probabilityDistribution,
-                                                                                                        [key]: Number(newValue)
-                                                                                                    };
-                                                                                                    handleEventChange(
-                                                                                                        index,
-                                                                                                        `dependencies[${depIndex}].probabilityDistribution`,
-                                                                                                        updatedDistribution
-                                                                                                    );
-                                                                                                }}
-                                                                                                InputProps={{
-                                                                                                    inputProps: { 
-                                                                                                        step: "0.01"
-                                                                                                    }
-                                                                                                }}
-                                                                                            />
-                                                                                        ))}
-                                                                                </Stack>
-                                                                            </Box>
-                                                                        )}
+                                                                                <IconButton
+                                                                                    size="small"
+                                                                                    onClick={() => handleRemoveDependency(index, depIndex)}
+                                                                                    color="error"
+                                                                                >
+                                                                                    <Delete fontSize="small" />
+                                                                                </IconButton>
+                                                                            </Stack>
 
-                                                                        <DistributionModal
-                                                                            open={Array.isArray(openDistributions[index]) && openDistributions[index][depIndex]}
-                                                                            duration={duration}
-                                                                            initialValue={defaultParamsByDistribution[dep.probabilityDistribution.type]}
-                                                                            onClose={() => {
-                                                                                const updatedModals = [...openDistributions];
-                                                                                if (Array.isArray(updatedModals[index])) {
-                                                                                    updatedModals[index][depIndex] = false;
-                                                                                }
-                                                                                setOpenDistributions(updatedModals);
-                                                                            }}
-                                                                            onConfirm={(res) => {
-                                                                                handleEventChange(index, `dependencies[${depIndex}].probabilityDistribution`, res);
-                                                                                const updatedModals = [...openDistributions];
-                                                                                if (Array.isArray(updatedModals[index])) {
-                                                                                    updatedModals[index][depIndex] = false;
-                                                                                }
-                                                                                setOpenDistributions(updatedModals);
-                                                                            }}
-                                                                        />
-                                                                    </Stack>
-                                                                </Paper>
-                                                            ))}
-                                                        </Stack>
-                                                    </Paper>
-                                                </Box>
-                                            </Stack>
-                                        </Paper>
-                                    ))}
-                                </Stack>
-                            </Paper>
-                        </Stack>
-                    )}
+                                                                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                                                                                <Box sx={{ width: 'calc(33.33% - 16px)' }}>
+                                                    <TextField
+                                                        label="Depends On"
+                                                        select
+                                                        size="small"
+                                                        fullWidth
+                                                                                        value={dep.dependOn || ""}
+                                                                                        onChange={(e) => handleEventChange(index, `dependencies[${depIndex}].dependOn`, e.target.value || null)}
+                                                                                        sx={{ minWidth: '200px' }}
+                                                    >
+                                                        <MenuItem value="">None</MenuItem>
+                                                        {entities.map((entity, idx) => (
+                                                            <MenuItem key={idx} value={entity}>
+                                                                {entity}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </TextField>
+                                                                                </Box>
+                                                                                <Box sx={{ width: 'calc(33.33% - 16px)' }}>
+                                                                                    <TextField
+                                                                                        label="Max Probability Matches"
+                                                                                        size="small"
+                                                                                        fullWidth
+                                                                                        value={dep.maxProbabilityMatches || ""}
+                                                                                        onChange={(e) => handleEventChange(index, `dependencies[${depIndex}].maxProbabilityMatches`, e.target.value)}
+                                                                                        helperText="Use '#entityName' to reference an entity count"
+                                                                                        sx={{ minWidth: '200px' }}
+                                                                                    />
+                                                                                </Box>
+                                                                                <Box sx={{ width: 'calc(33.33% - 16px)' }}>
+                                                <TextField
+                                                    label="Distribution Type"
+                                                    select
+                                                    required
+                                                                                        error={!dep.probabilityDistribution.type}
+                                                                                        helperText={!dep.probabilityDistribution.type ? "Distribution Type is required" : " "}
+                                                    size="small"
+                                                    fullWidth
+                                                                                        value={dep.probabilityDistribution.type}
+                                                    onChange={(e) => {
+                                                        const selectedType = e.target.value;
+                                                                                            handleEventChange(index, `dependencies[${depIndex}].probabilityDistribution.type`, selectedType);
+                                                                                            const updatedModals = [...openDistributions];
+                                                                                            if (!Array.isArray(updatedModals[index])) {
+                                                                                                updatedModals[index] = [];
+                                                                                            }
+                                                                                            updatedModals[index][depIndex] = true;
+                                                                                            setOpenDistributions(updatedModals);
+                                                    }}
+                                                                                        sx={{ minWidth: '200px' }}
+                                                >
+                                                    {distributionTypes.map((opt) => (
+                                                        <MenuItem key={opt.value} value={opt.value}>
+                                                            {opt.label}
+                                                        </MenuItem>
+                                                    ))}
+                                                </TextField>
+                                                                                </Box>
+                                                                            </Box>
+
+                                                                            {dep.probabilityDistribution.type && (
+                                                                                <Box sx={{ mt: 1 }}>
+                                                                                    <Typography variant="subtitle2" gutterBottom color="text.secondary">
+                                                                                        Distribution Parameters
+                                                                                    </Typography>
+                                                                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                                                                                        {Object.entries(dep.probabilityDistribution)
+                                                                                            .filter(([key]) => key !== 'type')
+                                                                                            .map(([key, value]) => (
+                                                                                                <Box sx={{ width: 'calc(33.33% - 16px)' }} key={key}>
+                                                                                                    <TextField
+                                                                                                        label={key}
+                                                                                                        size="small"
+                                                                                                        type="number"
+                                                                                                        fullWidth
+                                                                                                        value={value}
+                                                                                                        onChange={(e) => {
+                                                                                                            const newValue = e.target.value;
+                                                                                                            const updatedDistribution = {
+                                                                                                                ...dep.probabilityDistribution,
+                                                                                                                [key]: Number(newValue)
+                                                                                                            };
+                                                                                                            handleEventChange(
+                                                                                                                index,
+                                                                                                                `dependencies[${depIndex}].probabilityDistribution`,
+                                                                                                                updatedDistribution
+                                                                                                            );
+                                                                                                        }}
+                                                                                                        InputProps={{
+                                                                                                            inputProps: { 
+                                                                                                                step: "0.01"
+                                                                                                            }
+                                                                                                        }}
+                                                                                                        sx={{ minWidth: '200px' }}
+                                                                                                    />
+                                                                                                </Box>
+                                                                                            ))}
+                                                                                    </Box>
+
+                                                                                    <Box sx={{ mt: 2, height: 200, bgcolor: 'background.paper', p: 2, borderRadius: 1 }}>
+                                                                                        <Typography variant="subtitle2" gutterBottom>
+                                                                                            Distribution Preview
+                    </Typography>
+                    <Line
+                                                                                            data={{
+                                                                                                datasets: [{
+                                                                                                    label: `${event.eventName} - Dependency ${depIndex + 1}`,
+                                                                                                    data: Array.from({ length: 100 }, (_, i) => {
+                                                                                                        const t = i * (duration / 100);
+                                                                                                        const prob = Math.max(0, getProbFromParams(dep.probabilityDistribution.type, t, dep.probabilityDistribution));
+                                                                                                        return {
+                                                                                                            x: t,
+                                                                                                            y: prob
+                                                                                                        };
+                                                                                                    }),
+                                                                                                    borderWidth: 3,
+                                                                                                    pointRadius: 0,
+                                                                                                    fill: false,
+                                                                                                    borderColor: getColorFromString(`${event.eventName}-${depIndex}`),
+                                                                                                }]
+                                                                                            }}
+                        options={{
+                            responsive: true,
+                                                                                                maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                                                                                        type: 'linear',
+                                                                                                        title: {
+                                                                                                            display: true,
+                                                                                                            text: 'Time'
+                                                                                                        },
+                                                                                                        ticks: {
+                                                                                                            callback: function(value) {
+                                                                                                                const numValue = Number(value);
+                                                                                                                if (numValue >= 3600) {
+                                                                                                                    return Math.round(numValue / 3600) + 'h';
+                                                                                                                }
+                                                                                                                if (numValue >= 60) {
+                                                                                                                    return Math.round(numValue / 60) + 'm';
+                                                                                                                }
+                                                                                                                return numValue + 's';
+                                                                                                            }
+                                                                                                        }
+                                },
+                                y: {
+                                                                                                        type: 'linear',
+                                                                                                        min: 0,
+                                                                                                        title: {
+                                                                                                            display: true,
+                                                                                                            text: 'Probability'
+                                                                                                        },
+                                                                                                        ticks: {
+                                                                                                            callback: function(value) {
+                                                                                                                const numValue = Number(value);
+                                                                                                                // Determina il numero di decimali necessari
+                                                                                                                let decimals;
+                                                                                                                if (numValue >= 0.01) {
+                                                                                                                    decimals = 2;  // Per valori >= 0.01
+                                                                                                                } else if (numValue >= 0.001) {
+                                                                                                                    decimals = 3;  // Per valori >= 0.001
+                                                                                                                } else if (numValue >= 0.0001) {
+                                                                                                                    decimals = 4;  // Per valori >= 0.0001
+                                                                                                                } else if (numValue >= 0.00001) {
+                                                                                                                    decimals = 5;  // Per valori >= 0.00001
+                                                                                                                } else if (numValue >= 0.000001) {
+                                                                                                                    decimals = 6;  // Per valori >= 0.000001
+                                                                                                                } else if (numValue >= 0.0000001) {
+                                                                                                                    decimals = 7;  // Per valori >= 0.0000001
+                                                                                                                } else if (numValue >= 0.00000001) {
+                                                                                                                    decimals = 8;  // Per valori >= 0.00000001
+                                                                                                                } else {
+                                                                                                                    decimals = 9;  // Per valori più piccoli
+                                                                                                                }
+                                                                                                                return numValue.toFixed(decimals).replace('.', ',');
+                                                                                                            },
+                                                                                                            count: 6
+                                                                                                        },
+                                                                                                        grace: '5%'
+                                                                                                    }
+                                                                                                },
+                                                                                                plugins: {
+                                                                                                    legend: {
+                                                                                                        display: true,
+                                                                                                        position: 'top' as const,
+                                                                                                    },
+                                                                                                    tooltip: {
+                                                                                                        callbacks: {
+                                                                                                            label: function(context) {
+                                                                                                                const value = Number(context.parsed.y);
+                                                                                                                const time = Number(context.parsed.x);
+                                                                                                                let timeStr;
+                                                                                                                if (time >= 3600) {
+                                                                                                                    timeStr = (time / 3600).toFixed(1) + ' hours';
+                                                                                                                } else if (time >= 60) {
+                                                                                                                    timeStr = (time / 60).toFixed(1) + ' minutes';
+                                                                                                                } else {
+                                                                                                                    timeStr = time.toFixed(1) + ' seconds';
+                                                                                                                }
+                                                                                                                // Usa la stessa logica per i decimali del valore
+                                                                                                                let decimals;
+                                                                                                                if (value >= 0.01) {
+                                                                                                                    decimals = 2;
+                                                                                                                } else if (value >= 0.001) {
+                                                                                                                    decimals = 3;
+                                                                                                                } else if (value >= 0.0001) {
+                                                                                                                    decimals = 4;
+                                                                                                                } else if (value >= 0.00001) {
+                                                                                                                    decimals = 5;
+                                                                                                                } else if (value >= 0.000001) {
+                                                                                                                    decimals = 6;
+                                                                                                                } else if (value >= 0.0000001) {
+                                                                                                                    decimals = 7;
+                                                                                                                } else if (value >= 0.00000001) {
+                                                                                                                    decimals = 8;
+                                                                                                                } else {
+                                                                                                                    decimals = 9;
+                                                                                                                }
+                                                                                                                const probStr = value.toFixed(decimals).replace('.', ',');
+                                                                                                                return `Time: ${timeStr}, Probability: ${probStr}`;
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                        }}
+                    />
+                                                                                    </Box>
+                                                                                </Box>
+                                                                            )}
+
+                                                                            <DistributionModal
+                                                                                open={Array.isArray(openDistributions[index]) && openDistributions[index][depIndex]}
+                                                                                duration={duration}
+                                                                                initialValue={defaultParamsByDistribution[dep.probabilityDistribution.type]}
+                                                                                onClose={() => {
+                                                                                    const updatedModals = [...openDistributions];
+                                                                                    if (Array.isArray(updatedModals[index])) {
+                                                                                        updatedModals[index][depIndex] = false;
+                                                                                    }
+                                                                                    setOpenDistributions(updatedModals);
+                                                                                }}
+                                                                                onConfirm={(res) => {
+                                                                                    handleEventChange(index, `dependencies[${depIndex}].probabilityDistribution`, res);
+                                                                                    const updatedModals = [...openDistributions];
+                                                                                    if (Array.isArray(updatedModals[index])) {
+                                                                                        updatedModals[index][depIndex] = false;
+                                                                                    }
+                                                                                    setOpenDistributions(updatedModals);
+                                                                                }}
+                                                                            />
+                                                                        </Stack>
+                                                                    </Paper>
+                                                                ))}
+                                                            </Stack>
+                                                        </Paper>
+                                                    </Box>
+                                                </Stack>
+                                            </Paper>
+                                        ))}
+                                    </Stack>
+                                </Paper>
+                            </Stack>
+                        )}
+                    </Box>
                 </DialogContent>
 
                 <DialogActions>
