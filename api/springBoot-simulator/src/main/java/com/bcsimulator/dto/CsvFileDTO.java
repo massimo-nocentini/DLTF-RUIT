@@ -13,13 +13,15 @@ public class CsvFileDTO {
     private String path;
     private LocalDateTime createdAt;
     private List<String> columns;
+    private String configurationJson;
 
-    public CsvFileDTO(Long id, String name, String path, LocalDateTime createdAt, String columnsString) {
+    public CsvFileDTO(Long id, String name, String path, LocalDateTime createdAt, String columnsString, String configurationJson) {
         this.id = id;
         this.name = name;
         this.path = path;
         this.createdAt = createdAt;
         this.columns = parseColumns(columnsString);
+        this.configurationJson = configurationJson;
     }
 
     private List<String> parseColumns(String columnsString) {

@@ -10,7 +10,8 @@ public class CsvFileMapper {
                 entity.getName(),
                 entity.getPath(),
                 entity.getCreatedAt(),
-                entity.getColumns()
+                entity.getColumns(),
+                entity.getConfigurationJson()
         );
     }
 }

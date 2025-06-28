@@ -28,7 +28,8 @@ public class CsvFileService {
                         f.getName(),
                         f.getPath(),
                         f.getCreatedAt(),
-                        f.getColumns() != null ? f.getColumns() : ""  // evita NPE
+                        f.getColumns() != null ? f.getColumns() : "",  // evita NPE
+                        f.getConfigurationJson() != null ? f.getConfigurationJson() : "{}"  // evita NPE
                 ))
                 .toList();
     }

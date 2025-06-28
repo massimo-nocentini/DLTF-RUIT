@@ -20,4 +20,7 @@ public class CsvFile {
 
     @Column(columnDefinition = "TEXT")
     private String columns; // es: "time,value1,value2,value3"
+
+    @Column(columnDefinition = "TEXT")
+    private String configurationJson; // Stores the simulation configuration JSON
 }

@@ -25,6 +25,9 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Component
 @Slf4j
 public class SimulationTasklet implements Tasklet {
@@ -69,7 +72,7 @@ public class SimulationTasklet implements Tasklet {
                 updateProgressInContext(chunkContext, progress, jobExecutionId);
             }
             log.info("Ending sim of " + simParams.getNumRuns() + " runs.");
-            CsvFile savedFile = registerCsvFile(simParams.getName(), params.getString("outfile"));
+            CsvFile savedFile = registerCsvFile(simParams.getName(), params.getString("outfile"), simParams);
         } catch (IOException ex) {
             System.err.println("ERROR WHILE WRITING TO FILE.");
             ex.printStackTrace();
@@ -79,12 +82,21 @@ public class SimulationTasklet implements Tasklet {
         return RepeatStatus.FINISHED;
     }
 
-    private CsvFile registerCsvFile(String name, String filePath) {
+    private CsvFile registerCsvFile(String name, String filePath, SimulationRequestDTO simParams) {
         CsvFile file = new CsvFile();
         file.setName(name);
         file.setPath(filePath);
         file.setCreatedAt(LocalDateTime.now());
         file.setColumns(readCsvHeader(filePath));
+        
+        // Save the simulation configuration JSON
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            file.setConfigurationJson(mapper.writeValueAsString(simParams));
+        } catch (JsonProcessingException e) {
+            log.error("Error serializing simulation configuration", e);
+            file.setConfigurationJson("{}"); // Fallback to empty JSON
+        }
 
         CsvFile savedFile = csvFileRepository.save(file);
 
