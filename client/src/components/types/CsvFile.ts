@@ -4,6 +4,7 @@ export interface CsvFile {
     path: string;
     columns: string[];
     createdAt: string;
+    configurationJson: string;
 }
 
 export interface DatasetRequest {
