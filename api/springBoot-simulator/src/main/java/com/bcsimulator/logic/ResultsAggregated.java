@@ -39,14 +39,43 @@ public class ResultsAggregated {
      * @param time
      */
     public void compute(int time) {
-
         // Reset di tutti i valori
         for (Map.Entry<String, long[]> entry : results.entrySet()) {
             Arrays.fill(entry.getValue(), 0L);
         }
 
-        SplittableRandom splittableRandom = new SplittableRandom();
+        // Calculate percentage and time values
+        double percentage = (time * 100.0) / simParams.getMaxTime();
+        String timeDisplay = String.format("(%d sec, %.2f min, %.2f h, %.2f d)", 
+            time,
+            time / 60.0,
+            time / 3600.0,
+            time / 86400.0);
 
+        // Build entity counts string
+        StringBuilder entityCounts = new StringBuilder(" | Entities: ");
+        for (String entity : simParams.getEntities()) {
+            String entityKey = toCamelCase(entity);
+            LinkedList<Integer>[] entityList = this.entities.get(entityKey);
+            if (entityList != null) {
+                int totalCount = 0;
+                for (int run = 0; run < simParams.getNumRuns(); run++) {
+                    if (entityList[run] != null) {
+                        totalCount += entityList[run].size();
+                    }
+                }
+                entityCounts.append(entity).append("=").append(totalCount).append(", ");
+            }
+        }
+        // Remove last comma and space if any entities were added
+        if (entityCounts.length() > 12) {
+            entityCounts.setLength(entityCounts.length() - 2);
+        }
+
+        System.out.println(String.format("Computing time step: %d %s - %.2f%% completed%s", 
+                                       time, timeDisplay, percentage, entityCounts.toString()));
+
+        SplittableRandom splittableRandom = new SplittableRandom();
         double randomDouble;
         int timeInner;
 
@@ -113,76 +142,80 @@ public class ResultsAggregated {
         String eventKey = toCamelCase(eventName);
         long gasCost = event.getGasCost();
 
+        // Skip events without dependencies
         if (event.getDependencies() == null || event.getDependencies().isEmpty()) {
-            // event without dependencies, use global counter for run
-            processEventWithoutDependencies(eventName, randomDouble, timeInner, run, instanceOf, eventKey, gasCost);
-        } else {
-            // event with dependencies: check for each dependency
-            for (EventDependencyDTO dependency : event.getDependencies()) {
-                processEventWithDependency(eventName, dependency, randomDouble, timeInner, run, instanceOf, eventKey, gasCost);
-            }
-        }
-    }
-
-    private void processEventWithoutDependencies(String eventName, double randomDouble, int timeInner, int run, 
-                                               String instanceOf, String eventKey, long gasCost) {
-        // Events without dependencies should not occur at all
-        return;
-    }
-
-    private void processEventWithDependency(String eventName, EventDependencyDTO dependency, double randomDouble, 
-                                          int timeInner, int run, String instanceOf, String eventKey, long gasCost) {
-        String dependOn = dependency.getDependOn();
-        String maxProbabilityMatchesStr = dependency.getMaxProbabilityMatches();
-        AbstractDistributionDTO dist = dependency.getProbabilityDistribution();
-
-        // If dependOn is null, treat it as a global probability check
-        if (dependOn == null) {
-            double probTimeDep = dist.getProb(timeInner);
-            if (randomDouble <= probTimeDep) {
-                // Handle entity-referenced maxProbabilityMatches (e.g. "#user")
-                boolean isBelowLimit = true;
-                if (maxProbabilityMatchesStr != null) {
-                    Integer maxProbabilityMatches = parseMaxProbabilityMatches(maxProbabilityMatchesStr, run);
-                    isBelowLimit = maxProbabilityMatches == null || maxProbabilityMatches <= 0 ||
-                            counters.get(eventKey)[run] < maxProbabilityMatches;
-                }
-
-                if (!isBelowLimit) return;
-
-                if (instanceOf != null) {
-                    this.entities.get(toCamelCase(instanceOf))[run].add(timeInner);
-                    this.aggregatedEntities.get(toCamelCase(instanceOf))[run].add(timeInner);
-                }
-                addGas(run, eventName, gasCost);
-                counters.get(eventKey)[run]++;
-            }
             return;
         }
 
-        // Handle entity-referenced maxProbabilityMatches (e.g. "#user")
-        Integer maxProbabilityMatches = parseMaxProbabilityMatches(maxProbabilityMatchesStr, run);
+        // For dependencies without dependOn (global probabilities), we just need to check once
+        boolean globalDependenciesSatisfied = event.getDependencies().stream()
+                .filter(d -> d.getDependOn() == null)
+                .allMatch(d -> {
+                    double probTimeDep = d.getProbabilityDistribution().getProb(timeInner);
+                    return randomDouble <= probTimeDep;
+                });
 
-            LinkedList<Integer>[] entityList = this.entities.get(toCamelCase(dependOn));
-            if (entityList != null) {
+        if (!globalDependenciesSatisfied) {
+            return;
+        }
+
+        // Check if all entity-dependent probabilities are satisfied
+        boolean allDependenciesSatisfied = true;
+        
+        // For each entity-dependent dependency
+        for (EventDependencyDTO dependency : event.getDependencies()) {
+            if (dependency.getDependOn() != null) {
+                LinkedList<Integer>[] entityList = this.entities.get(toCamelCase(dependency.getDependOn()));
+                
+                // Skip if required entities are missing
+                if (entityList == null || entityList[run] == null || entityList[run].isEmpty()) {
+                    allDependenciesSatisfied = false;
+                    break;
+                }
+
+                AbstractDistributionDTO dist = dependency.getProbabilityDistribution();
+                String maxProbabilityMatchesStr = dependency.getMaxProbabilityMatches();
+                Integer maxProbabilityMatches = parseMaxProbabilityMatches(maxProbabilityMatchesStr, run);
+                
+                boolean dependencySatisfied = false;
                 for (Integer entityTime : entityList[run]) {
                     double probTimeDep = dist.getProb(timeInner - entityTime);
-                    if (randomDouble <= probTimeDep) {
-                        boolean isBelowLimit = maxProbabilityMatches == null || maxProbabilityMatches <= 0 ||
-                                isBelowPerEntityLimit(eventKey, run, entityTime, maxProbabilityMatches);
+                    boolean probabilityCheck = randomDouble <= probTimeDep;
+                    boolean limitCheck = maxProbabilityMatches == null || maxProbabilityMatches <= 0 ||
+                            isBelowPerEntityLimit(eventKey, run, entityTime, maxProbabilityMatches);
 
-                        if (!isBelowLimit) continue;
-
-                        if (instanceOf != null) {
-                            this.entities.get(toCamelCase(instanceOf))[run].add(timeInner);
-                            this.aggregatedEntities.get(toCamelCase(instanceOf))[run].add(timeInner);
-                        }
-                        addGas(run, eventName, gasCost);
+                    if (probabilityCheck && limitCheck) {
+                        dependencySatisfied = true;
+                        break;
+                    }
+                }
+                
+                if (!dependencySatisfied) {
+                    allDependenciesSatisfied = false;
+                    break;
+                }
+            }
+        }
+        
+        // Only if all dependencies are satisfied, create the event instance
+        if (allDependenciesSatisfied) {
+            if (instanceOf != null) {
+                this.entities.get(toCamelCase(instanceOf))[run].add(timeInner);
+                this.aggregatedEntities.get(toCamelCase(instanceOf))[run].add(timeInner);
+            }
+            addGas(run, eventName, gasCost);
+            // Increment for all relevant entities
+            for (EventDependencyDTO dependency : event.getDependencies()) {
+                if (dependency.getDependOn() != null) {
+                    LinkedList<Integer>[] entityList = this.entities.get(toCamelCase(dependency.getDependOn()));
+                    for (Integer entityTime : entityList[run]) {
                         incrementEntityCount(eventKey, run, entityTime);
                     }
                 }
             }
         }
+    }
+
 
     private Integer parseMaxProbabilityMatches(String maxProbabilityMatchesStr, int run) {
         if (maxProbabilityMatchesStr == null) return null;
