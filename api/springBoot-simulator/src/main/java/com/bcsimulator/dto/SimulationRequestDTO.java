@@ -27,6 +27,7 @@ public class SimulationRequestDTO {
     List<EventDTO> events;
     @NotNull(message = "Simulation name is required")
     String name;
+    String description;
     int numAggr;
     int maxTime;
     int numRuns;
@@ -56,6 +57,7 @@ public class SimulationRequestDTO {
                 .addLong("numAggr", (long) this.numAggr)
                 .addLong("maxTime", (long) this.maxTime)
                 .addString("name", this.name)
+                .addString("description", this.description)
                 .addLong("maxTime", (long) this.maxTime)
                 .addLong("numRuns", (long) this.numRuns)
                 .addString("outfile", buildOutFileName("./output",this.maxTime, this.numAggr,this.name))
@@ -80,6 +82,7 @@ public class SimulationRequestDTO {
         dto.setMaxTime(params.getLong("maxTime").intValue());
         dto.setNumRuns(params.getLong("numRuns").intValue());
         dto.setName(params.getString("name"));
+        dto.setDescription(params.getString("description"));
 
         // Per la lista events, se è serializzata come JSON, possiamo deserializzarla
         String eventsJson = params.getString("events");
