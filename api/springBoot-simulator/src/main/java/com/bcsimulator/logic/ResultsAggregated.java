@@ -52,19 +52,15 @@ public class ResultsAggregated {
             time / 3600.0,
             time / 86400.0);
 
-        // Build entity counts string
+        // Build entity counts string using already calculated averages
         StringBuilder entityCounts = new StringBuilder(" | Entities: ");
         for (String entity : simParams.getEntities()) {
             String entityKey = toCamelCase(entity);
             LinkedList<Integer>[] entityList = this.entities.get(entityKey);
             if (entityList != null) {
-                int totalCount = 0;
-                for (int run = 0; run < simParams.getNumRuns(); run++) {
-                    if (entityList[run] != null) {
-                        totalCount += entityList[run].size();
-                    }
-                }
-                entityCounts.append(entity).append("=").append(totalCount).append(", ");
+                Map<String, String> stats = generateInstanceSizeReportForValue(entityList);
+                double avgCount = Double.parseDouble(stats.get("avgSize"));
+                entityCounts.append(entity).append("=").append(String.format("%.1f", avgCount)).append(", ");
             }
         }
         // Remove last comma and space if any entities were added
