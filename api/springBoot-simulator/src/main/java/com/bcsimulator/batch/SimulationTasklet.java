@@ -72,10 +72,20 @@ public class SimulationTasklet implements Tasklet {
                 updateProgressInContext(chunkContext, progress, jobExecutionId);
             }
             log.info("Ending sim of " + simParams.getNumRuns() + " runs.");
-            CsvFile savedFile = registerCsvFile(simParams.getName(), params.getString("outfile"), simParams);
+            
+            // Try to register the CSV file in database, but don't fail if ApplicationContext is closed
+            try {
+                CsvFile savedFile = registerCsvFile(simParams.getName(), params.getString("outfile"), simParams);
+                log.info("Successfully registered CSV file in database with id: {}", savedFile.getId());
+            } catch (Exception e) {
+                log.warn("Failed to register CSV file in database (likely due to ApplicationContext closure): {}. CSV file was created successfully at: {}", 
+                         e.getMessage(), params.getString("outfile"));
+                // Don't throw exception - the simulation and file creation were successful
+            }
         } catch (IOException ex) {
             System.err.println("ERROR WHILE WRITING TO FILE.");
             ex.printStackTrace();
+            throw ex; // Re-throw IOException as it's a critical failure
         }
 
 
