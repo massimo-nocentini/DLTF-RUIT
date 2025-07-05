@@ -17,8 +17,8 @@
             "type": "LOGNORMAL_SCALED",
             "mean": 1,
             "std": 1,
-            "scalingFactorX": 0.0017,
-            "scalingFactorY": 1.8
+            "scalingFactorX": 0.00017,
+            "scalingFactorY": 0.69
           }
         }
       ],
@@ -37,7 +37,7 @@
             "mean": 2000,
             "std": 400,
             "scalingFactorX": 0.01,
-            "scalingFactorY": 10
+            "scalingFactorY": 1
           }
         }
       ],
