@@ -86,10 +86,13 @@ set style fill transparent solid 0.2
 set xtics ('0' 0, '2d' 172800, '4d' 345600, '6d' 518400, '8d' 691200, '10d' 864000, '12d' 1036800, '14d' 1209600)
 
 # Font settings
+# font e la dimensione delle tacche (numeri sull'asse).
 set xtics font 'Times-New-Roman,12'
 set ytics font 'Times-New-Roman,12'
+# font etichette degli assi.
 set xlabel font 'Times-New-Roman,14'
 set ylabel font 'Times-New-Roman,14'
+# titolo e font della legenda
 set title font 'Times-New-Roman,16' noenhanced
 set key font 'Times-New-Roman,11'
 set xlabel 'Time (days)'
@@ -101,15 +104,20 @@ set grid mxtics mytics lt 1 lc rgb '#eeeeee' lw 0.5
 "
 
 common_clean_settings="
-set terminal pngcairo enhanced size 1200,800 font 'DejaVu Sans,15'
+set terminal pngcairo enhanced size 1200,800 font 'DejaVu Sans,22'
 
 # Clean minimal settings
 set grid xtics ytics lt 1 lc rgb '#e0e0e0' lw 1
 set border 3 lw 2
-set key top left box opaque font 'DejaVu Sans,13' spacing 1.5 width 1 height 0.5
+set key top left box opaque font 'DejaVu Sans,18' spacing 1.5 width 1 height 0.5
 set xrange [0:1209600]
 set xtics ('0' 0, '2d' 172800, '4d' 345600, '6d' 518400, '8d' 691200, '10d' 864000, '12d' 1036800, '14d' 1209600)
 set yrange [0:*]
+set xtics font 'Helvetica,20'
+set ytics font 'Helvetica,14'
+set xlabel font 'Helvetica,28'
+set ylabel font 'Helvetica,28'
+set title font 'Helvetica,30' noenhanced
 set xlabel 'Time (days)'
 "
 
@@ -121,7 +129,7 @@ set output './output/img/dao_avgTrend_comparison_Users_trend.png'
 set title 'Average Users Comparison'
 set ylabel 'Average Number of Users'
 $common_clean_settings
-set key at screen 0.95, 0.5 right top box opaque font 'DejaVu Sans,13'
+set key at screen 0.95, 0.5 right top box opaque font 'DejaVu Sans,22'
 
 plot '$file1' using 1:27 smooth bezier with lines lw 3 lc '$color1' title '$sim1', \
      '$file2' using 1:27 smooth bezier with lines lw 3 lc '$color2' title '$sim2', \
@@ -179,7 +187,7 @@ EOF
 #set logscale y
 #set bars 2.0
 #$common_clean_settings
-#set key at screen 0.95, 0.05 right bottom box opaque font 'DejaVu Sans,13'
+#set key at screen 0.95, 0.05 right bottom box opaque font 'DejaVu Sans,22'
 #set format y "10^{%T}"
 #
 ## Plot with lines only for log scale
@@ -302,6 +310,8 @@ $common_clean_settings
 set output './output/img/dao_avg_comparison_VoteProposalRatio.png'
 set title 'Vote-to-Proposal Ratio (Engagement Efficiency)'
 set ylabel 'Votes per Proposal'
+set key horizontal top center box opaque font 'DejaVu Sans,18' spacing 1.2
+set yrange [0:1300]
 
 # Add check to avoid division by zero
 plot '$file1' using 1:(\$17>0 ? \$22/\$17 : 0) smooth bezier with lines lw 3 lc '$color1' title '$sim1', \
@@ -402,7 +412,7 @@ $common_clean_settings
 set output './output/img/dao_avg_comparison_ProposalRate.png'
 set title 'Proposal Creation Rate (Proposals per User)'
 set ylabel 'Proposals per User'
-set key horizontal top center box opaque font 'DejaVu Sans,11' spacing 1.2
+set key horizontal top center box opaque font 'DejaVu Sans,18' spacing 1.2
 
 # Add check to avoid division by zero
 plot '$file1' using 1:(\$27>0 ? \$17/\$27 : 0) smooth bezier with lines lw 3 lc '$color1' title '$sim1', \
@@ -456,7 +466,7 @@ EOF
 #set output './output/img/dao_avg_comparison_CumulativePerformance.png'
 #set title 'Cumulative DAO Performance (Total Activity Score)'
 #set ylabel 'Cumulative Activity Score'
-#set key at screen 0.95, 0.05 right bottom box opaque font 'DejaVu Sans,13'
+#set key at screen 0.95, 0.05 right bottom box opaque font 'DejaVu Sans,22'
 #
 ## Combined metric: Users + Proposals*10 + Votes/100
 #plot '$file1' using 1:(\$27 + \$17*10 + \$22/100) smooth bezier with lines lw 4 lc '$color1' title '$sim1', \
@@ -512,8 +522,9 @@ gnuplot << EOF
 $common_clean_settings
 set output './output/img/dao_gas_comparison_Total.png'
 set title 'Total Gas Consumption Over Time'
-set ylabel 'Total Gas (Mean)'
-set key horizontal top center box opaque font 'DejaVu Sans,11' spacing 1.2
+set ylabel 'Average Gas Units'
+set key horizontal top center box opaque font 'DejaVu Sans,18' spacing 1.2
+set yrange [0:100000000]
 
 plot '$file1' using 1:8 smooth bezier with lines lw 3 lc '$color1' title '$sim1', \
      '$file2' using 1:8 smooth bezier with lines lw 3 lc '$color2' title '$sim2', \
@@ -563,7 +574,7 @@ EOF
 #set output './output/img/dao_gas_comparison_GasVariability.png'
 #set title 'Gas Cost Variability (Mean ± Std Dev)'
 #set ylabel 'Total Gas Cost'
-#set key top left box opaque font 'DejaVu Sans,13'
+#set key top left box opaque font 'DejaVu Sans,22'
 #
 #plot '$file1' using 1:8:9 with yerrorbars lw 2 pt 7 ps 0.5 lc '$color1' title '$sim1 (±std)', \
 #     '$file1' using 1:8 smooth bezier with lines lw 3 lc '$color1' notitle, \
@@ -614,7 +625,7 @@ EOF
 #set output './output/img/dao_gas_comparison_CostDistribution.png'
 #set title 'Relative Cost Distribution by Operation (%)'
 #set ylabel 'Relative Cost (%)'
-#set key top right box opaque font 'DejaVu Sans,13'
+#set key top right box opaque font 'DejaVu Sans,22'
 #set yrange [0:100]
 #
 ## Normalize costs as percentages
@@ -639,7 +650,7 @@ EOF
 #set output './output/img/dao_gas_comparison_Efficiency.png'
 #set title 'Gas Efficiency (Real Data - Gas per Activity Unit)'
 #set ylabel 'Gas per Activity'
-#set key at screen 0.95, 0.5 right top box opaque font 'DejaVu Sans,13'
+#set key at screen 0.95, 0.5 right top box opaque font 'DejaVu Sans,22'
 #
 ## Real data: gasTotalMean(8) / Total activities (totUser(26) + totProposal(16) + totVote(21))
 #plot '$file1' using 1:((\$26+\$16+\$21)>0 ? \$8/(\$26+\$16+\$21) : 0) smooth bezier with lines lw 3 lc '$color1' title '$sim1', \
@@ -692,15 +703,15 @@ gnuplot << EOF
 $common_clean_settings
 set output './output/img/dao_gas_comparison_CostPerUser.png'
 set title 'Average Cost per User (Gas)'
-set ylabel 'Gas per User'
+set ylabel 'Average Gas Units per User'
 
 # Cost per user = Total cost / Number of users
-plot '$file1' using 1:(\$27>0 ? (\$27*80000 + \$17*210000 + \$22*80000)/\$27 : 0) smooth bezier with lines lw 3 lc '$color1' title '$sim1', \
-     '$file2' using 1:(\$27>0 ? (\$27*80000 + \$17*210000 + \$22*80000)/\$27 : 0) smooth bezier with lines lw 3 lc '$color2' title '$sim2', \
-     '$file3' using 1:(\$27>0 ? (\$27*80000 + \$17*210000 + \$22*80000)/\$27 : 0) smooth bezier with lines lw 3 lc '$color3' title '$sim3', \
-     '$file4' using 1:(\$27>0 ? (\$27*80000 + \$17*210000 + \$22*80000)/\$27 : 0) smooth bezier with lines lw 3 lc '$color4' title '$sim4', \
-     '$file5' using 1:(\$27>0 ? (\$27*80000 + \$17*210000 + \$22*80000)/\$27 : 0) smooth bezier with lines lw 3 lc '$color5' title '$sim5', \
-     '$file6' using 1:(\$27>0 ? (\$27*80000 + \$17*210000 + \$22*80000)/\$27 : 0) smooth bezier with lines lw 3 lc '$color6' title '$sim6'
+plot '$file1' using 1:(\$27>0 ? \$8/\$27 : 0) smooth bezier with lines lw 3 lc '$color1' title '$sim1', \
+     '$file2' using 1:(\$27>0 ? \$8/\$27 : 0)  smooth bezier with lines lw 3 lc '$color2' title '$sim2', \
+     '$file3' using 1:(\$27>0 ? \$8/\$27 : 0)  smooth bezier with lines lw 3 lc '$color3' title '$sim3', \
+     '$file4' using 1:(\$27>0 ? \$8/\$27 : 0)  smooth bezier with lines lw 3 lc '$color4' title '$sim4', \
+     '$file5' using 1:(\$27>0 ? \$8/\$27 : 0)  smooth bezier with lines lw 3 lc '$color5' title '$sim5', \
+     '$file6' using 1:(\$27>0 ? \$8/\$27 : 0)  smooth bezier with lines lw 3 lc '$color6' title '$sim6'
 EOF
 
 # ============================================================================
@@ -714,10 +725,10 @@ EOF
 # ============================================================================
 gnuplot << EOF
 $common_clean_settings
-set output './output/img/dao_sim1_gas_components.png'
-set title 'Gas Cost Components Over Time - $sim1'
+set output './output/img/dao_sim1_gas_breakdown.png'
+set title 'Gas Cost Breakdown Over Time - $sim1'
 set ylabel 'Gas Cost (Mean)'
-set key horizontal top center box opaque font 'DejaVu Sans,11' spacing 1.2
+set key horizontal top center box opaque font 'DejaVu Sans,22' spacing 1.2
 
 # Plot all gas components for sim1 with colored areas
 plot '$file1' using 1:6 with filledcurves x1 lw 2 lc rgb '#FFE66D' fillstyle transparent solid 0.6 title 'Vote Gas', \
@@ -737,10 +748,10 @@ EOF
 # ============================================================================
 gnuplot << EOF
 $common_clean_settings
-set output './output/img/dao_sim4_gas_components.png'
-set title 'Gas Cost Components Over Time - $sim4'
+set output './output/img/dao_sim4_gas_breakdown.png'
+set title 'Gas Cost Breakdown Over Time - $sim4'
 set ylabel 'Gas Cost (Mean)'
-set key horizontal top center box opaque font 'DejaVu Sans,11' spacing 1.2
+set key horizontal top center box opaque font 'DejaVu Sans,22' spacing 1.2
 
 # Plot all gas components for sim4 with colored areas
 plot '$file4' using 1:6 with filledcurves x1 lw 2 lc rgb '#FFE66D' fillstyle transparent solid 0.6 title 'Vote Gas', \
@@ -761,7 +772,7 @@ set output './output/img/dao_gas_breakdown_sim1_log.png'
 set title 'Gas Cost Breakdown (Log Scale) - $sim1'
 set ylabel 'Gas Cost (Mean) - Log Scale'
 set logscale y
-set key horizontal top center box opaque font 'DejaVu Sans,11' spacing 1.2
+set key horizontal top center box opaque font 'DejaVu Sans,22' spacing 1.2
 
 # Plot individual components with colored areas and log scale
 plot '$file1' using 1:6 with filledcurves x1 lw 2 lc rgb '#FFE66D' fillstyle transparent solid 0.7 title 'Vote Gas', \
@@ -782,7 +793,7 @@ set output './output/img/dao_gas_breakdown_sim4_log.png'
 set title 'Gas Cost Breakdown (Log Scale) - $sim4'
 set ylabel 'Gas Cost (Mean) - Log Scale'
 set logscale y
-set key horizontal bottom center box opaque font 'DejaVu Sans,11' spacing 1.2
+set key horizontal bottom center box opaque font 'DejaVu Sans,22' spacing 1.2
 
 # Plot individual components with colored areas and log scale
 plot '$file4' using 1:6 with filledcurves x1 lw 2 lc rgb '#FFE66D' fillstyle transparent solid 0.7 title 'Vote Gas', \
@@ -800,28 +811,29 @@ EOF
 # ============================================================================
 gnuplot << EOF
 $common_clean_settings
-set output './output/img/dao_gas_components_comparison.png'
-set multiplot layout 2,1 title 'Gas Cost Components Comparison - Normal Scale'
+set output './output/img/dao_gas_breakdown_comparison.png'
+set multiplot layout 2,1 title 'Gas Cost Breakdown Comparison - Linear Scale' font 'DejaVu Sans,34'
 
 # Top panel: Sim1
-set title '$sim1'
-set ylabel 'Gas Cost (Mean)'
-set key horizontal top center box opaque font 'DejaVu Sans,10' spacing 1.0
+set title '$sim1'  font 'DejaVu Sans,24'
+set ylabel 'Average Gas Units'
+# set key horizontal top center box opaque font 'DejaVu Sans,15' spacing 0.8 width 0.1 height 0.9 samplen 1 maxcols 4 at screen 0.55,0.85
+set key box opaque font 'DejaVu Sans,16' spacing 1 width 0.45 height 0.9 samplen 0.7 maxcols 2 at screen 0.22,0.53
 
-plot '$file1' using 1:6 with filledcurves x1 lw 2 lc rgb '#FFE66D' fillstyle transparent solid 0.6 title 'Vote Gas', \
-     '$file1' using 1:4 with filledcurves x1 lw 2 lc rgb '#4ECDC4' fillstyle transparent solid 0.6 title 'CreateProposal Gas', \
-     '$file1' using 1:5 with filledcurves x1 lw 2 lc rgb '#FF6B6B' fillstyle transparent solid 0.6 title 'CreateUser Gas', \
-     '$file1' using 1:8 smooth bezier with lines lw 3 lc rgb '#2C3E50' title 'Total Gas'
+plot '$file1' using 1:6 with filledcurves x1 lw 2 lc rgb '#FFE66D' fillstyle transparent solid 0.6 title 'Vote', \
+     '$file1' using 1:4 with filledcurves x1 lw 2 lc rgb '#4ECDC4' fillstyle transparent solid 0.6 title 'CreateProposal', \
+     '$file1' using 1:2 with filledcurves x1 lw 2 lc rgb '#FF6B6B' fillstyle transparent solid 0.6 title 'CreateUser', \
+     '$file1' using 1:8 smooth bezier with lines lw 3 lc rgb '#2C3E50' title 'Total'
 
 # Bottom panel: Sim4
-set title '$sim4'
-set ylabel 'Gas Cost (Mean)'
-set key horizontal top center box opaque font 'DejaVu Sans,10' spacing 1.0
+set title '$sim4' font 'DejaVu Sans,24'
+set ylabel 'Average Gas Units'
+# set key horizontal top center box opaque font 'DejaVu Sans,12' spacing 1.0
 
-plot '$file4' using 1:6 with filledcurves x1 lw 2 lc rgb '#FFE66D' fillstyle transparent solid 0.6 title 'Vote Gas', \
-     '$file4' using 1:4 with filledcurves x1 lw 2 lc rgb '#4ECDC4' fillstyle transparent solid 0.6 title 'CreateProposal Gas', \
-     '$file4' using 1:5 with filledcurves x1 lw 2 lc rgb '#FF6B6B' fillstyle transparent solid 0.6 title 'CreateUser Gas', \
-     '$file4' using 1:8 smooth bezier with lines lw 3 lc rgb '#2C3E50' title 'Total Gas'
+plot '$file4' using 1:6 with filledcurves x1 lw 2 lc rgb '#FFE66D' fillstyle transparent solid 0.6 title 'Vote', \
+     '$file4' using 1:4 with filledcurves x1 lw 2 lc rgb '#4ECDC4' fillstyle transparent solid 0.6 title 'CreateProposal', \
+     '$file4' using 1:2 with filledcurves x1 lw 2 lc rgb '#FF6B6B' fillstyle transparent solid 0.6 title 'CreateUser', \
+     '$file4' using 1:8 smooth bezier with lines lw 3 lc rgb '#2C3E50' title 'Total'
 
 unset multiplot
 EOF
@@ -835,8 +847,8 @@ EOF
 # ============================================================================
 gnuplot << EOF
 $common_clean_settings
-set output './output/img/dao_gas_components_comparison_log.png'
-set multiplot layout 2,1 title 'Gas Cost Components Comparison - Logarithmic Scale'
+set output './output/img/dao_gas_breakdown_comparison_log.png'
+set multiplot layout 2,1 title 'Gas Cost Breakdown Comparison - Logarithmic Scale'
 set logscale y
 
 # Top panel: Sim1
@@ -846,7 +858,7 @@ set key vertical bottom right box opaque font 'DejaVu Sans,10' spacing 1.0
 
 plot '$file1' using 1:6 with filledcurves x1 lw 2 lc rgb '#FFE66D' fillstyle transparent solid 0.7 title 'Vote Gas', \
      '$file1' using 1:4 with filledcurves x1 lw 2 lc rgb '#4ECDC4' fillstyle transparent solid 0.7 title 'CreateProposal Gas', \
-     '$file1' using 1:5 with filledcurves x1 lw 2 lc rgb '#FF6B6B' fillstyle transparent solid 0.7 title 'CreateUser Gas', \
+     '$file1' using 1:2 with filledcurves x1 lw 2 lc rgb '#FF6B6B' fillstyle transparent solid 0.7 title 'CreateUser Gas', \
      '$file1' using 1:8 smooth bezier with lines lw 3 lc rgb '#2C3E50' title 'Total Gas'
 
 # Bottom panel: Sim4
@@ -856,7 +868,7 @@ set key vertical bottom right box opaque font 'DejaVu Sans,10' spacing 1.0
 
 plot '$file4' using 1:6 with filledcurves x1 lw 2 lc rgb '#FFE66D' fillstyle transparent solid 0.7 title 'Vote Gas', \
      '$file4' using 1:4 with filledcurves x1 lw 2 lc rgb '#4ECDC4' fillstyle transparent solid 0.7 title 'CreateProposal Gas', \
-     '$file4' using 1:5 with filledcurves x1 lw 2 lc rgb '#FF6B6B' fillstyle transparent solid 0.7 title 'CreateUser Gas', \
+     '$file4' using 1:2 with filledcurves x1 lw 2 lc rgb '#FF6B6B' fillstyle transparent solid 0.7 title 'CreateUser Gas', \
      '$file4' using 1:8 smooth bezier with lines lw 3 lc rgb '#2C3E50' title 'Total Gas'
 
 unset multiplot

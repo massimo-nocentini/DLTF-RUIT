@@ -1,0 +1,26 @@
+{
+  "entities": [
+    "kitty"
+  ],
+  "events": [
+    {
+      "eventName": "craete",
+      "eventDescription": "",
+      "instanceOf": "kitty",
+      "gasCost": 7,
+      "dependencies": [
+        {
+          "dependOn": null,
+          "probabilityDistribution": {
+            "type": "UNIFORM",
+            "value": 0.0001
+          }
+        }
+      ]
+    }
+  ],
+  "name": "Simulation",
+  "numAggr": 3600,
+  "maxTime": 1209600,
+  "numRuns": "5"
+}

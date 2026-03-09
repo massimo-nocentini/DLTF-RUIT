@@ -75,7 +75,7 @@ public class SimulationTasklet implements Tasklet {
             
             // Try to register the CSV file in database, but don't fail if ApplicationContext is closed
             try {
-                CsvFile savedFile = registerCsvFile(simParams.getName(), params.getString("outfile"), simParams);
+            CsvFile savedFile = registerCsvFile(simParams.getName(), params.getString("outfile"), simParams);
                 log.info("Successfully registered CSV file in database with id: {}", savedFile.getId());
             } catch (Exception e) {
                 log.warn("Failed to register CSV file in database (likely due to ApplicationContext closure): {}. CSV file was created successfully at: {}", 
