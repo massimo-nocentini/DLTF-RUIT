@@ -1,0 +1,17 @@
+/target
+data/star/out.bdd
+
+/louvain/*.o
+/louvain/*.exe
+/louvain/*.out
+/louvain/convert
+/louvain/hierarchy
+/louvain/community
+*.bin
+*.hier
+*.tree
+*.ef
+*.graph
+*.offsets
+*.properties
+*.nodes
