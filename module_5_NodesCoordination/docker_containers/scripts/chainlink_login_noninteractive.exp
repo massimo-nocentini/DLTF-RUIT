@@ -1,0 +1,8 @@
+#!/usr/bin/expect -f
+set timeout 30
+
+spawn chainlink admin login
+expect "Enter email:" { send -- "$env(CL_API_EMAIL)\r" }
+expect "Enter password:" { send -- "$env(CL_API_PASSWORD)\r" }
+expect eof
+

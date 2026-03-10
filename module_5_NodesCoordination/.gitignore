@@ -1,0 +1,8 @@
+docker_containers/volumes/
+docker_containers/web_server/node_modules/
+chainlink_truffle/node_modules/
+chainlink_truffle/build/
+chainlink_truffle/artifacts/
+chainlink_truffle/cache/
+chainlink_truffle/deployments/
+chainlink_truffle/.env

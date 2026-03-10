@@ -1,0 +1,102 @@
+{
+	"compiler": {
+		"version": "0.7.1+commit.f4a555be"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [],
+				"name": "a",
+				"outputs": [
+					{
+						"internalType": "int128",
+						"name": "",
+						"type": "int128"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "b",
+				"outputs": [
+					{
+						"internalType": "int128",
+						"name": "",
+						"type": "int128"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "int128",
+						"name": "v",
+						"type": "int128"
+					}
+				],
+				"name": "setA",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "int128",
+						"name": "v",
+						"type": "int128"
+					}
+				],
+				"name": "setB",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"Values.sol": "Values"
+		},
+		"evmVersion": "istanbul",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"Values.sol": {
+			"keccak256": "0xc85bb3da029cbbf1028557b743081ad21f64785b148d365c18b6d10bb5c6ff81",
+			"urls": [
+				"bzz-raw://5917844bc6e3570d9d6db2382e1c3459293a541f96322a0067c84e46d4ae75da",
+				"dweb:/ipfs/QmerBd5jVfF42bzqvZM6fx9RhjWRUi7KtaENnTDVoEyzcH"
+			]
+		}
+	},
+	"version": 1
+}

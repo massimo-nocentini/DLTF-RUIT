@@ -1,0 +1,1863 @@
+{
+	"compiler": {
+		"version": "0.7.1+commit.f4a555be"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "uint32",
+						"name": "_maximumGasPrice",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "_reasonableGasPrice",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "_microLinkPerEth",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "_linkGweiPerObservation",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "_linkGweiPerTransmission",
+						"type": "uint32"
+					},
+					{
+						"internalType": "contract LinkTokenInterface",
+						"name": "_link",
+						"type": "address"
+					},
+					{
+						"internalType": "int192",
+						"name": "_minAnswer",
+						"type": "int192"
+					},
+					{
+						"internalType": "int192",
+						"name": "_maxAnswer",
+						"type": "int192"
+					},
+					{
+						"internalType": "contract AccessControllerInterface",
+						"name": "_billingAccessController",
+						"type": "address"
+					},
+					{
+						"internalType": "contract AccessControllerInterface",
+						"name": "_requesterAccessController",
+						"type": "address"
+					},
+					{
+						"internalType": "uint8",
+						"name": "_decimals",
+						"type": "uint8"
+					},
+					{
+						"internalType": "string",
+						"name": "_description",
+						"type": "string"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "int256",
+						"name": "current",
+						"type": "int256"
+					},
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "roundId",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "updatedAt",
+						"type": "uint256"
+					}
+				],
+				"name": "AnswerUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "contract AccessControllerInterface",
+						"name": "old",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "contract AccessControllerInterface",
+						"name": "current",
+						"type": "address"
+					}
+				],
+				"name": "BillingAccessControllerSet",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint32",
+						"name": "maximumGasPrice",
+						"type": "uint32"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint32",
+						"name": "reasonableGasPrice",
+						"type": "uint32"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint32",
+						"name": "microLinkPerEth",
+						"type": "uint32"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint32",
+						"name": "linkGweiPerObservation",
+						"type": "uint32"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint32",
+						"name": "linkGweiPerTransmission",
+						"type": "uint32"
+					}
+				],
+				"name": "BillingSet",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint32",
+						"name": "previousConfigBlockNumber",
+						"type": "uint32"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint64",
+						"name": "configCount",
+						"type": "uint64"
+					},
+					{
+						"indexed": false,
+						"internalType": "address[]",
+						"name": "signers",
+						"type": "address[]"
+					},
+					{
+						"indexed": false,
+						"internalType": "address[]",
+						"name": "transmitters",
+						"type": "address[]"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint8",
+						"name": "threshold",
+						"type": "uint8"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint64",
+						"name": "encodedConfigVersion",
+						"type": "uint64"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes",
+						"name": "encoded",
+						"type": "bytes"
+					}
+				],
+				"name": "ConfigSet",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "contract LinkTokenInterface",
+						"name": "_oldLinkToken",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "contract LinkTokenInterface",
+						"name": "_newLinkToken",
+						"type": "address"
+					}
+				],
+				"name": "LinkTokenSet",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "roundId",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "startedBy",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "startedAt",
+						"type": "uint256"
+					}
+				],
+				"name": "NewRound",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint32",
+						"name": "aggregatorRoundId",
+						"type": "uint32"
+					},
+					{
+						"indexed": false,
+						"internalType": "int192",
+						"name": "answer",
+						"type": "int192"
+					},
+					{
+						"indexed": false,
+						"internalType": "address",
+						"name": "transmitter",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "int192[]",
+						"name": "observations",
+						"type": "int192[]"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes",
+						"name": "observers",
+						"type": "bytes"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes32",
+						"name": "rawReportContext",
+						"type": "bytes32"
+					}
+				],
+				"name": "NewTransmission",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "transmitter",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "payee",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"indexed": true,
+						"internalType": "contract LinkTokenInterface",
+						"name": "linkToken",
+						"type": "address"
+					}
+				],
+				"name": "OraclePaid",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					}
+				],
+				"name": "OwnershipTransferRequested",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					}
+				],
+				"name": "OwnershipTransferred",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "transmitter",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "current",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "proposed",
+						"type": "address"
+					}
+				],
+				"name": "PayeeshipTransferRequested",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "transmitter",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "previous",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "current",
+						"type": "address"
+					}
+				],
+				"name": "PayeeshipTransferred",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "contract AccessControllerInterface",
+						"name": "old",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "contract AccessControllerInterface",
+						"name": "current",
+						"type": "address"
+					}
+				],
+				"name": "RequesterAccessControllerSet",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "requester",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes16",
+						"name": "configDigest",
+						"type": "bytes16"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint32",
+						"name": "epoch",
+						"type": "uint32"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint8",
+						"name": "round",
+						"type": "uint8"
+					}
+				],
+				"name": "RoundRequested",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "contract AggregatorValidatorInterface",
+						"name": "previousValidator",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint32",
+						"name": "previousGasLimit",
+						"type": "uint32"
+					},
+					{
+						"indexed": true,
+						"internalType": "contract AggregatorValidatorInterface",
+						"name": "currentValidator",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint32",
+						"name": "currentGasLimit",
+						"type": "uint32"
+					}
+				],
+				"name": "ValidatorConfigSet",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "acceptOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_transmitter",
+						"type": "address"
+					}
+				],
+				"name": "acceptPayeeship",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "billingAccessController",
+				"outputs": [
+					{
+						"internalType": "contract AccessControllerInterface",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "decimals",
+				"outputs": [
+					{
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "description",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_roundId",
+						"type": "uint256"
+					}
+				],
+				"name": "getAnswer",
+				"outputs": [
+					{
+						"internalType": "int256",
+						"name": "",
+						"type": "int256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getBilling",
+				"outputs": [
+					{
+						"internalType": "uint32",
+						"name": "maximumGasPrice",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "reasonableGasPrice",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "microLinkPerEth",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "linkGweiPerObservation",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "linkGweiPerTransmission",
+						"type": "uint32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getLinkToken",
+				"outputs": [
+					{
+						"internalType": "contract LinkTokenInterface",
+						"name": "linkToken",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint80",
+						"name": "_roundId",
+						"type": "uint80"
+					}
+				],
+				"name": "getRoundData",
+				"outputs": [
+					{
+						"internalType": "uint80",
+						"name": "roundId",
+						"type": "uint80"
+					},
+					{
+						"internalType": "int256",
+						"name": "answer",
+						"type": "int256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "startedAt",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "updatedAt",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint80",
+						"name": "answeredInRound",
+						"type": "uint80"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_roundId",
+						"type": "uint256"
+					}
+				],
+				"name": "getTimestamp",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "lastTotalLinkDueToOracles",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "latestAnswer",
+				"outputs": [
+					{
+						"internalType": "int256",
+						"name": "",
+						"type": "int256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "latestConfigDetails",
+				"outputs": [
+					{
+						"internalType": "uint32",
+						"name": "configCount",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "blockNumber",
+						"type": "uint32"
+					},
+					{
+						"internalType": "bytes16",
+						"name": "configDigest",
+						"type": "bytes16"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "latestRound",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "latestRoundData",
+				"outputs": [
+					{
+						"internalType": "uint80",
+						"name": "roundId",
+						"type": "uint80"
+					},
+					{
+						"internalType": "int256",
+						"name": "answer",
+						"type": "int256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "startedAt",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "updatedAt",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint80",
+						"name": "answeredInRound",
+						"type": "uint80"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "latestTimestamp",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "latestTransmissionDetails",
+				"outputs": [
+					{
+						"internalType": "bytes16",
+						"name": "configDigest",
+						"type": "bytes16"
+					},
+					{
+						"internalType": "uint32",
+						"name": "epoch",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint8",
+						"name": "round",
+						"type": "uint8"
+					},
+					{
+						"internalType": "int192",
+						"name": "latestAnswer",
+						"type": "int192"
+					},
+					{
+						"internalType": "uint64",
+						"name": "latestTimestamp",
+						"type": "uint64"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "linkAvailableForPayment",
+				"outputs": [
+					{
+						"internalType": "int256",
+						"name": "availableBalance",
+						"type": "int256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "maxAnswer",
+				"outputs": [
+					{
+						"internalType": "int192",
+						"name": "",
+						"type": "int192"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "maxRequestLinkCost",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "minAnswer",
+				"outputs": [
+					{
+						"internalType": "int192",
+						"name": "",
+						"type": "int192"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_signerOrTransmitter",
+						"type": "address"
+					}
+				],
+				"name": "oracleObservationCount",
+				"outputs": [
+					{
+						"internalType": "uint16",
+						"name": "",
+						"type": "uint16"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_transmitter",
+						"type": "address"
+					}
+				],
+				"name": "owedPayment",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address payable",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_requesterAddr",
+						"type": "address"
+					}
+				],
+				"name": "requestNewRound",
+				"outputs": [
+					{
+						"internalType": "uint80",
+						"name": "",
+						"type": "uint80"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "requesterAccessController",
+				"outputs": [
+					{
+						"internalType": "contract AccessControllerInterface",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "requesterAddr",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint32",
+						"name": "_maximumGasPrice",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "_reasonableGasPrice",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "_microLinkPerEth",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "_linkGweiPerObservation",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "_linkGweiPerTransmission",
+						"type": "uint32"
+					}
+				],
+				"name": "setBilling",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "contract AccessControllerInterface",
+						"name": "_billingAccessController",
+						"type": "address"
+					}
+				],
+				"name": "setBillingAccessController",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address[]",
+						"name": "_signers",
+						"type": "address[]"
+					},
+					{
+						"internalType": "address[]",
+						"name": "_transmitters",
+						"type": "address[]"
+					},
+					{
+						"internalType": "uint8",
+						"name": "_threshold",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint64",
+						"name": "_encodedConfigVersion",
+						"type": "uint64"
+					},
+					{
+						"internalType": "bytes",
+						"name": "_encoded",
+						"type": "bytes"
+					}
+				],
+				"name": "setConfig",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "contract LinkTokenInterface",
+						"name": "_linkToken",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_recipient",
+						"type": "address"
+					}
+				],
+				"name": "setLinkToken",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_maxRequestLinkCost",
+						"type": "uint256"
+					}
+				],
+				"name": "setMaxrequestLinkTonken",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address[]",
+						"name": "_transmitters",
+						"type": "address[]"
+					},
+					{
+						"internalType": "address[]",
+						"name": "_payees",
+						"type": "address[]"
+					}
+				],
+				"name": "setPayees",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "addr",
+						"type": "address"
+					}
+				],
+				"name": "setRequestManager",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "contract AccessControllerInterface",
+						"name": "_requesterAccessController",
+						"type": "address"
+					}
+				],
+				"name": "setRequesterAccessController",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "contract AggregatorValidatorInterface",
+						"name": "_newValidator",
+						"type": "address"
+					},
+					{
+						"internalType": "uint32",
+						"name": "_newGasLimit",
+						"type": "uint32"
+					}
+				],
+				"name": "setValidatorConfig",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "totalLINKDue",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "linkDue",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "tracker",
+				"outputs": [
+					{
+						"internalType": "contract RequestManager",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_to",
+						"type": "address"
+					}
+				],
+				"name": "transferOwnership",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_transmitter",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_proposed",
+						"type": "address"
+					}
+				],
+				"name": "transferPayeeship",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes",
+						"name": "_report",
+						"type": "bytes"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "_rs",
+						"type": "bytes32[]"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "_ss",
+						"type": "bytes32[]"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_rawVs",
+						"type": "bytes32"
+					}
+				],
+				"name": "transmit",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "transmitters",
+				"outputs": [
+					{
+						"internalType": "address[]",
+						"name": "",
+						"type": "address[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "typeAndVersion",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "validatorConfig",
+				"outputs": [
+					{
+						"internalType": "contract AggregatorValidatorInterface",
+						"name": "validator",
+						"type": "address"
+					},
+					{
+						"internalType": "uint32",
+						"name": "gasLimit",
+						"type": "uint32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "version",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_recipient",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_amount",
+						"type": "uint256"
+					}
+				],
+				"name": "withdrawFunds",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_transmitter",
+						"type": "address"
+					}
+				],
+				"name": "withdrawPayment",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"details": "For details on its operation, see the offchain reporting protocol designdoc, which refers to this contract as simply the \"contract\".",
+			"events": {
+				"ConfigSet(uint32,uint64,address[],address[],uint8,uint64,bytes)": {
+					"params": {
+						"configCount": "ordinal number of this config setting among all config settings over the life of this contract",
+						"encoded": "serialized data used by oracles to configure their offchain operation",
+						"encodedConfigVersion": "version of the serialization format used for \"encoded\" parameter",
+						"previousConfigBlockNumber": "block in which the previous config was set, to simplify historic analysis",
+						"signers": "ith element is address ith oracle uses to sign a report",
+						"threshold": "maximum number of faulty/dishonest oracles the protocol can tolerate while still working correctly",
+						"transmitters": "ith element is address ith oracle uses to transmit a report via the transmit method"
+					}
+				},
+				"NewTransmission(uint32,int192,address,int192[],bytes,bytes32)": {
+					"params": {
+						"aggregatorRoundId": "the round to which this report was assigned",
+						"answer": "median of the observations attached this report",
+						"observations": "observations transmitted with this report",
+						"rawReportContext": "signature-replay-prevention domain-separation tag",
+						"transmitter": "address from which the report was transmitted"
+					}
+				},
+				"RequesterAccessControllerSet(address,address)": {
+					"params": {
+						"current": "the address of the new access controller contract",
+						"old": "the address prior to the current setting"
+					}
+				},
+				"RoundRequested(address,bytes16,uint32,uint8)": {
+					"params": {
+						"configDigest": "the latest transmission's configDigest",
+						"epoch": "the latest transmission's epoch",
+						"requester": "the address of the requester",
+						"round": "the latest transmission's round"
+					}
+				},
+				"ValidatorConfigSet(address,uint32,address,uint32)": {
+					"params": {
+						"currentGasLimit": "current gas limit for validate calls",
+						"currentValidator": "current validator contract",
+						"previousGasLimit": "previous gas limit for validate calls",
+						"previousValidator": "previous validator contract"
+					}
+				}
+			},
+			"kind": "dev",
+			"methods": {
+				"acceptOwnership()": {
+					"details": "Allows an ownership transfer to be completed by the recipient."
+				},
+				"acceptPayeeship(address)": {
+					"details": "can only be called by proposed new payee address",
+					"params": {
+						"_transmitter": "transmitter address of oracle whose payee is changing"
+					}
+				},
+				"billingAccessController()": {
+					"returns": {
+						"_0": "address of billingAccessController contract"
+					}
+				},
+				"getAnswer(uint256)": {
+					"params": {
+						"_roundId": "the aggregator round of the target report"
+					}
+				},
+				"getBilling()": {
+					"params": {
+						"linkGweiPerObservation": "reward to oracle for contributing an observation to a successfully transmitted report, in 1e-9LINK units",
+						"linkGweiPerTransmission": "reward to transmitter of a successful report, in 1e-9LINK units",
+						"maximumGasPrice": "highest gas price for which transmitter will be compensated",
+						"microLinkPerEth": "reimbursement per ETH of gas cost, in 1e-6LINK units",
+						"reasonableGasPrice": "transmitter will receive reward for gas prices under this value"
+					}
+				},
+				"getRoundData(uint80)": {
+					"params": {
+						"_roundId": "target aggregator round (NOT OCR round). Must fit in uint32"
+					},
+					"returns": {
+						"answer": "median of report from given _roundId",
+						"answeredInRound": "_roundId",
+						"roundId": "_roundId",
+						"startedAt": "timestamp of block in which report from given _roundId was transmitted",
+						"updatedAt": "timestamp of block in which report from given _roundId was transmitted"
+					}
+				},
+				"getTimestamp(uint256)": {
+					"params": {
+						"_roundId": "aggregator round (NOT OCR round) of target report"
+					}
+				},
+				"latestConfigDetails()": {
+					"returns": {
+						"blockNumber": "block at which this config was set",
+						"configCount": "ordinal number of current config, out of all configs applied to this contract so far",
+						"configDigest": "domain-separation tag for current config (see configDigestFromConfigData)"
+					}
+				},
+				"latestRoundData()": {
+					"returns": {
+						"answer": "median of latest report",
+						"answeredInRound": "aggregator round of latest report",
+						"roundId": "aggregator round of latest report (NOT OCR round)",
+						"startedAt": "timestamp of block containing latest report",
+						"updatedAt": "timestamp of block containing latest report"
+					}
+				},
+				"linkAvailableForPayment()": {
+					"returns": {
+						"availableBalance": "LINK available on this contract, after accounting for outstanding obligations. can become negative"
+					}
+				},
+				"oracleObservationCount(address)": {
+					"params": {
+						"_signerOrTransmitter": "address used by oracle for signing or transmitting reports"
+					}
+				},
+				"owedPayment(address)": {
+					"params": {
+						"_transmitter": "the transmitter address of the oracle"
+					}
+				},
+				"requestNewRound(address)": {
+					"returns": {
+						"_0": "the aggregatorRoundId of the next round. Note: The report for this round may have been transmitted (but not yet mined) *before* requestNewRound() was even called. There is *no* guarantee of causality between the request and the report at aggregatorRoundId."
+					}
+				},
+				"requesterAccessController()": {
+					"returns": {
+						"_0": "requester access controller address"
+					}
+				},
+				"setBilling(uint32,uint32,uint32,uint32,uint32)": {
+					"details": "access control provided by billingAccessController",
+					"params": {
+						"_linkGweiPerObservation": "reward to oracle for contributing an observation to a successfully transmitted report, in 1e-9LINK units",
+						"_linkGweiPerTransmission": "reward to transmitter of a successful report, in 1e-9LINK units",
+						"_maximumGasPrice": "highest gas price for which transmitter will be compensated",
+						"_microLinkPerEth": "reimbursement per ETH of gas cost, in 1e-6LINK units",
+						"_reasonableGasPrice": "transmitter will receive reward for gas prices under this value"
+					}
+				},
+				"setBillingAccessController(address)": {
+					"details": "only owner can call this",
+					"params": {
+						"_billingAccessController": "new billingAccessController contract address"
+					}
+				},
+				"setConfig(address[],address[],uint8,uint64,bytes)": {
+					"params": {
+						"_encoded": "encoded off-chain oracle configuration",
+						"_encodedConfigVersion": "version number for offchainEncoding schema",
+						"_signers": "addresses with which oracles sign the reports",
+						"_threshold": "number of faulty oracles the system can tolerate",
+						"_transmitters": "addresses oracles use to transmit the reports"
+					}
+				},
+				"setPayees(address[],address[])": {
+					"details": "must be called by ownercannot be used to change payee addresses, only to initially populate them",
+					"params": {
+						"_payees": "addresses of payees corresponding to list of transmitters",
+						"_transmitters": "addresses oracles use to transmit the reports"
+					}
+				},
+				"setRequesterAccessController(address)": {
+					"params": {
+						"_requesterAccessController": "designates the address of the new requester access controller"
+					}
+				},
+				"setValidatorConfig(address,uint32)": {
+					"details": "set _newValidator to 0x0 to disable validate calls",
+					"params": {
+						"_newGasLimit": "new gas limit for validate calls",
+						"_newValidator": "address of the new validator contract"
+					}
+				},
+				"transferOwnership(address)": {
+					"details": "Allows an owner to begin transferring ownership to a new address, pending."
+				},
+				"transferPayeeship(address,address)": {
+					"details": "can only be called by payee address",
+					"params": {
+						"_proposed": "new payee address",
+						"_transmitter": "transmitter address of oracle whose payee is changing"
+					}
+				},
+				"transmit(bytes,bytes32[],bytes32[],bytes32)": {
+					"params": {
+						"_rawVs": "ith element is the the V component of the ith signature",
+						"_report": "serialized report, which the signatures are signing. See parsing code below for format. The ith element of the observers component must be the index in s_signers of the address for the ith signature",
+						"_rs": "ith element is the R components of the ith signature on report. Must have at most maxNumOracles entries",
+						"_ss": "ith element is the S components of the ith signature on report. Must have at most maxNumOracles entries"
+					}
+				},
+				"transmitters()": {
+					"details": "The list will match the order used to specify the transmitter during setConfig",
+					"returns": {
+						"_0": "list of addresses permitted to transmit reports to this contract"
+					}
+				},
+				"validatorConfig()": {
+					"returns": {
+						"gasLimit": "gas limit for validate calls",
+						"validator": "validator contract"
+					}
+				},
+				"withdrawFunds(address,uint256)": {
+					"details": "access control provided by billingAccessController",
+					"params": {
+						"_amount": "maximum amount to withdraw, denominated in LINK-wei.",
+						"_recipient": "address to send funds to"
+					}
+				},
+				"withdrawPayment(address)": {
+					"details": "must be called by oracle's payee address",
+					"params": {
+						"_transmitter": "the transmitter address of the oracle"
+					}
+				}
+			},
+			"stateVariables": {
+				"decimals": {
+					"return": "answers are stored in fixed-point format, with this many digits of precision"
+				}
+			},
+			"version": 1
+		},
+		"userdoc": {
+			"events": {
+				"BillingAccessControllerSet(address,address)": {
+					"notice": "emitted when a new access-control contract is set"
+				},
+				"BillingSet(uint32,uint32,uint32,uint32,uint32)": {
+					"notice": "emitted when billing parameters are set"
+				},
+				"ConfigSet(uint32,uint64,address[],address[],uint8,uint64,bytes)": {
+					"notice": "triggers a new run of the offchain reporting protocol"
+				},
+				"NewTransmission(uint32,int192,address,int192[],bytes,bytes32)": {
+					"notice": "indicates that a new report was transmitted"
+				},
+				"OraclePaid(address,address,uint256,address)": {
+					"notice": "emitted when an oracle has been paid LINK"
+				},
+				"PayeeshipTransferRequested(address,address,address)": {
+					"notice": "emitted when a transfer of an oracle's payee address has been initiated"
+				},
+				"PayeeshipTransferred(address,address,address)": {
+					"notice": "emitted when a transfer of an oracle's payee address has been completed"
+				},
+				"RequesterAccessControllerSet(address,address)": {
+					"notice": "emitted when a new requester access controller contract is set"
+				},
+				"RoundRequested(address,bytes16,uint32,uint8)": {
+					"notice": "emitted to immediately request a new round"
+				},
+				"ValidatorConfigSet(address,uint32,address,uint32)": {
+					"notice": "indicates that the validator configuration has been set"
+				}
+			},
+			"kind": "user",
+			"methods": {
+				"acceptPayeeship(address)": {
+					"notice": "second step of payeeship transfer (safe transfer pattern)"
+				},
+				"billingAccessController()": {
+					"notice": "gets billingAccessController"
+				},
+				"description()": {
+					"notice": "human-readable description of observable this contract is reporting on"
+				},
+				"getAnswer(uint256)": {
+					"notice": "median of report from given aggregator round (NOT OCR round)"
+				},
+				"getBilling()": {
+					"notice": "gets billing parameters"
+				},
+				"getRoundData(uint80)": {
+					"notice": "details for the given aggregator round"
+				},
+				"getTimestamp(uint256)": {
+					"notice": "timestamp of block in which report from given aggregator round was transmitted"
+				},
+				"latestAnswer()": {
+					"notice": "median from the most recent report"
+				},
+				"latestConfigDetails()": {
+					"notice": "information about current offchain reporting protocol configuration"
+				},
+				"latestRound()": {
+					"notice": "Aggregator round (NOT OCR round) in which last report was transmitted"
+				},
+				"latestRoundData()": {
+					"notice": "aggregator details for the most recently transmitted report"
+				},
+				"latestTimestamp()": {
+					"notice": "timestamp of block in which last report was transmitted"
+				},
+				"linkAvailableForPayment()": {
+					"notice": "allows oracles to check that sufficient LINK balance is available"
+				},
+				"oracleObservationCount(address)": {
+					"notice": "number of observations oracle is due to be reimbursed for"
+				},
+				"owedPayment(address)": {
+					"notice": "query an oracle's payment amount"
+				},
+				"requestNewRound(address)": {
+					"notice": "immediately requests a new round"
+				},
+				"requesterAccessController()": {
+					"notice": "address of the requester access controller contract"
+				},
+				"setBilling(uint32,uint32,uint32,uint32,uint32)": {
+					"notice": "sets billing parameters"
+				},
+				"setBillingAccessController(address)": {
+					"notice": "sets billingAccessController"
+				},
+				"setConfig(address[],address[],uint8,uint64,bytes)": {
+					"notice": "sets offchain reporting protocol configuration incl. participating oracles"
+				},
+				"setPayees(address[],address[])": {
+					"notice": "sets the payees for transmitting addresses"
+				},
+				"setRequesterAccessController(address)": {
+					"notice": "sets the requester access controller"
+				},
+				"setValidatorConfig(address,uint32)": {
+					"notice": "sets validator configuration"
+				},
+				"transferPayeeship(address,address)": {
+					"notice": "first step of payeeship transfer (safe transfer pattern)"
+				},
+				"transmit(bytes,bytes32[],bytes32[],bytes32)": {
+					"notice": "transmit is called to post a new report to the contract"
+				},
+				"validatorConfig()": {
+					"notice": "validator configuration"
+				},
+				"version()": {
+					"notice": "aggregator contract version"
+				},
+				"withdrawFunds(address,uint256)": {
+					"notice": "withdraw any available funds left in the contract, up to _amount, after accounting for the funds due to participants in past reports"
+				},
+				"withdrawPayment(address)": {
+					"notice": "withdraws an oracle's payment from the contract"
+				}
+			},
+			"notice": "Onchain verification of reports from the offchain reporting protocol",
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"OffchainAggregator.sol": "OffchainAggregator"
+		},
+		"evmVersion": "istanbul",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"OffchainAggregator.sol": {
+			"keccak256": "0x4a644eae2c68f62b2a1343a2aa39239ca2c7c04259baa1d2a14ab28854d3dc30",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://68a9daf764a624a8e6ac0f860665c5a27183b725965b2f3389e4c7803448f0a9",
+				"dweb:/ipfs/QmbaPgtVW9N8tzAUSzkB8MG55PE4AZwiA6sDLmeLzmxeaG"
+			]
+		},
+		"RequestManager.sol": {
+			"keccak256": "0x9cf028fa59ca28d0ed6acd61784e8c208a5f2ad3c6eabc94f15063e85dc03e01",
+			"urls": [
+				"bzz-raw://d738f179b2358ff4d6481c28105b6a72498271c3a0c66af9872ee939ece4d2be",
+				"dweb:/ipfs/QmTLHc3JtpTB5ZUh7ooY2EivxD22NSjJKFcRh2SG2ugf7e"
+			]
+		},
+		"centralized-oracle-lib/Chainlink.sol": {
+			"keccak256": "0x478824bd30ceb9ca90a1ab7af243a6d0eb3a4f5108add98b3a8a3654ae2416e8",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://307af8ae81b92c37a05891db7b3739185f38967f69d1d0828bf861fd8839a473",
+				"dweb:/ipfs/QmS83QmjgL8SG9hWPSVy5ni8GcraT1QLPLvf2AT5pNFyy3"
+			]
+		},
+		"centralized-oracle-lib/ChainlinkClient.sol": {
+			"keccak256": "0xcc16e6c4e64779f534fa9f947143c4a4740d6c99d195b2baab8b587d3ae61890",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://5a58001e8a0145340e548c113ea93a61930d4e852cc5f1ed41ca44e771e8d262",
+				"dweb:/ipfs/QmUET51yhD9ovnqa5t3Yjg8Q1f1h2mdmCVySAdRgjqA4oj"
+			]
+		},
+		"centralized-oracle-lib/interfaces/ChainlinkRequestInterface.sol": {
+			"keccak256": "0x5461aa441a5578fdb7181169e0060b8cb3e7eb96441140e8353424deae730073",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7a71019411365d5e12056b55669366926caf128e60584269f8bc6715ba93e756",
+				"dweb:/ipfs/QmaRS5tzQcSAkoFaj6aSM4aywiK7mgyVg9Xv9c9jii9rv8"
+			]
+		},
+		"centralized-oracle-lib/interfaces/ENSInterface.sol": {
+			"keccak256": "0xbcc882630a19fcf5624418e16da7b6120189fdb15d3b9dfa2bcba26bc01681b9",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://f64fd1d5d2e65667cd22fbf847741cb1bc21fd65d2c2c92672612f15eb7df5c2",
+				"dweb:/ipfs/QmdVDd3sEy5PWX8ZwrhSDyMvwDRoyr9mnZfVeFN6g9BYh3"
+			]
+		},
+		"centralized-oracle-lib/interfaces/OperatorInterface.sol": {
+			"keccak256": "0xdaf32685096f5656e06d42a0b4b21b40d6cae01785bd6c422d3cd5205490ebf5",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ab093d585898036fdff4ce00427630111b3259249ee4b69f28da8c1f30ff9958",
+				"dweb:/ipfs/QmSp1d9FGNZKg1oj9QWWD7a8njmD4akwCa1HJYdDabLtzp"
+			]
+		},
+		"centralized-oracle-lib/interfaces/OracleInterface.sol": {
+			"keccak256": "0x7ad27eb013cd09554025f0db7a7db9eb1eb020f948fe891d9ed8c0215680f498",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://51425673f2a1fe1d3e4f5a9a8ae04e2ada2e50d627f21eb6bba175588ac17fcc",
+				"dweb:/ipfs/QmQk1kCQbRWuUcv3dffsMZupBLHJDh51pp7WmT94bSarCs"
+			]
+		},
+		"centralized-oracle-lib/interfaces/PointerInterface.sol": {
+			"keccak256": "0x1a8dd8a731f8a21031d2b77f6dacd71886bd36ba284c124610968d5a4ca32a7d",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a1bcb41c6393fa5479539fa99c6042f9e2fbabf7c6b2bd70faef1bd16af3c66d",
+				"dweb:/ipfs/QmejHY1CSfyQtL4MHRAG8CynT1ddZieyiuZHsoPNFjkPLE"
+			]
+		},
+		"centralized-oracle-lib/vendor/BufferChainlink.sol": {
+			"keccak256": "0x0e32a9fae6007927208e03b9147651715d8174a4a2ed9e5858defd1b35a31494",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://524d45cc07fbf13de659ab052b38a9db415170f35d5229cbe6a1424092fcbc31",
+				"dweb:/ipfs/QmZCugVuCrHW8MqNh6GMtpj8bPb9xcZrbKtFQftitUvPNJ"
+			]
+		},
+		"centralized-oracle-lib/vendor/CBORChainlink.sol": {
+			"keccak256": "0x08bda450d4dc1d17147fd29810234d35e2c437f1a99be733cfa7ee516db08a48",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d47a793b314afe9cd82fcf05ffe4ebbfa5504c2decc83004edbb3b2069d4f0c3",
+				"dweb:/ipfs/Qmd2YLSiS8xeeXqireh6qJgTTwVY2VscZpv2cQBU8gkEJT"
+			]
+		},
+		"centralized-oracle-lib/vendor/ENSResolver.sol": {
+			"keccak256": "0xeaeeab9e72f50bbfd1feeaf2c039a6586a04873b419330a7d6ca30d143be037d",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://50a275840f614c8c686cb48da9b48960bc439292945b37baf93a337d0cd19b21",
+				"dweb:/ipfs/Qme96jhN3CEZg42fTQgWJiyAt7c99vtcHd7QcKjVzJhn6A"
+			]
+		},
+		"interfaces/OCRCallback.sol": {
+			"keccak256": "0x653e818f2ee963e40760c5e17bb7d01f46f914528fac7f6674a4f4accc2edc91",
+			"urls": [
+				"bzz-raw://5ef808f9b5af70bbd28651ad237524bc514b90b9f716e570093d13f269049d28",
+				"dweb:/ipfs/QmdEYVSPoKa3MmqgjkKFydkuyaPRMv449fPdCnXticJMhG"
+			]
+		},
+		"interfaces/ResultCallback.sol": {
+			"keccak256": "0x44cdd93871d7b29db241e1de0e44491d5fbd908cca3000d2648efb15d408fb5a",
+			"urls": [
+				"bzz-raw://9b5e77d5f3c00a6f08ab38cae025c822f7e61b43f3feffd45a8efeb1e5fc1111",
+				"dweb:/ipfs/QmZctfQqAJriLY7azBNeC1585t6k8Fgb9PbBL9k3rdb4Yv"
+			]
+		},
+		"ocr-lib/AccessControllerInterface.sol": {
+			"keccak256": "0xd4ceebdd967741e37faa51ae1a2991e5cda04814a7969942bb8b9f2ae9ee7ead",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://4357a64c1ea99072d7e8b70f8016b69e58a8e4e0b499c7bce8d7e2d5bc4acf33",
+				"dweb:/ipfs/QmPjf68erjuBk4D4WAUBRwfe5H39BrbpqLXJonbBbFKdkr"
+			]
+		},
+		"ocr-lib/AggregatorInterface.sol": {
+			"keccak256": "0xba09dc6311d25eeff790a255c664b841aa6fd1b96b27325b6822770614420b9a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d00f04715de3285925cc5b7584fdd7b46511b05941ae192a42cf3085983029c9",
+				"dweb:/ipfs/QmQf9ZVv5ecrfNhyk2MKVh2JeSaupLP28pdZPJHXxeJrm5"
+			]
+		},
+		"ocr-lib/AggregatorV2V3Interface.sol": {
+			"keccak256": "0x77eb17583f7c63473bc8f5c2aa0985856c81f389a0940d6bef975a68743cefd2",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://c9705839ab4c72e14f1588e612b5156bf03ab185b895e366b8ef11c6fde14739",
+				"dweb:/ipfs/QmQ9atxSPC5JDRxgpsEyFaij9SuhKcoiD2T4qtyp2qMc3R"
+			]
+		},
+		"ocr-lib/AggregatorV3Interface.sol": {
+			"keccak256": "0xbf591ea627b0a65983211294c476c3c199fff6e31a9894d35b0dc56bac915fc8",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://72f810191e4ca2b111e511d344638f6476f39c169a4525544c50f88977d46aae",
+				"dweb:/ipfs/QmNjnjTUjKyPqzae3dBdzVJfhPh3FasP4RVVkvvbFNSTgN"
+			]
+		},
+		"ocr-lib/AggregatorValidatorInterface.sol": {
+			"keccak256": "0xf14fcf8c739f615cbb76b697a529b2ad9f4aee5eb49d9b8daaf4c0a9faf92e23",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://b5d517868a672120830d228214e279e520fe3cd3ae226d72209b71de2d7c3fa8",
+				"dweb:/ipfs/QmPXhFv79TePzmvnQ2zxZwohZBGMYXDMZtvC5XwTRBpKtN"
+			]
+		},
+		"ocr-lib/LinkTokenInterface.sol": {
+			"keccak256": "0x16bd00aad42cc91c0a8032d569a12469b4d80ae8e2597242371fcff474cd09a2",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://88540baab339a05a9d10db2092b75cd32c221e8819970c057836cfdf9b98dd95",
+				"dweb:/ipfs/Qme5BieRLBBDyngMJTZwtA7aBQYau5rRrM6dem6tyVidQR"
+			]
+		},
+		"ocr-lib/OffchainAggregatorBilling.sol": {
+			"keccak256": "0x29cd4fe96f4c07cf3e02e5f24823c33c12fa50334cd2462c1d56ddd786ac244d",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://5f9adaf37453dc2d0c64557b980028cea5872ce54d8160553336e735aca0c770",
+				"dweb:/ipfs/QmRMxwNoC8jSmj9ykS9CewDXPJVtn5XAGEWbeD4bYf5BM6"
+			]
+		},
+		"ocr-lib/Owned.sol": {
+			"keccak256": "0x27ab2db466e4b50ea3992daf2048716227a7eff9c3af1445b06777ef05a5f7b8",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://f3472b52b535bbe1e38ee6698c422afade4514e22a00ba5f32c7596443a8fdb0",
+				"dweb:/ipfs/QmaM9CR1VpN1fDPqQcdry83VuWZokaVXKu8SsBBPQbivGa"
+			]
+		},
+		"ocr-lib/TypeAndVersionInterface.sol": {
+			"keccak256": "0x2201288319435fa14042cd62ba733b913a5f329bdd3af9bb9c6a1bfdd0d7bbbd",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://11b6bca74fe1a7bbb6c3924aa8f183092c9550d2e11f0208a48f1b5820a4f841",
+				"dweb:/ipfs/QmUHKZmsyze32Lo4WnUEydbqtHKDUQJ6nKPcPLxgRPfsUQ"
+			]
+		}
+	},
+	"version": 1
+}

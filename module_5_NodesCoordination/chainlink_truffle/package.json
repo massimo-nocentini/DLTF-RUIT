@@ -1,0 +1,52 @@
+{
+  "name": "@chainlink/box",
+  "version": "0.6.0",
+  "description": "A Chainlink example in a Truffle box",
+  "scripts": {
+    "compile": "npx truffle compile",
+    "compile:hardhat": "npx hardhat compile",
+    "console:dev": "npx truffle console --network cldev",
+    "console:kovan": "npx truffle console --network kovan",
+    "depcheck": "echo '@chainlink/box' && depcheck --ignore-dirs=build/contracts || true",
+    "deploy:system:sepolia": "npx hardhat run scripts/deploy-system.js --network sepolia",
+    "deploy:system:part2:sepolia": "npx hardhat run scripts/deploy-system-part2.js --network sepolia",
+    "deploy:centralized:sepolia": "npx hardhat run scripts/deploy-centralized.js --network sepolia",
+    "deploy:ocr:feed:sepolia": "npx hardhat run scripts/deploy-ocr-feed.js --network sepolia",
+    "ocr:request-round:sepolia": "npx hardhat run scripts/request-new-round.js --network sepolia",
+    "ocr:read:sepolia": "npx hardhat run scripts/read-ocr-answer.js --network sepolia",
+    "ocr:history:sepolia": "npx hardhat run scripts/read-ocr-history.js --network sepolia",
+    "ocr:status:sepolia": "npx hardhat run scripts/check-ocr-state.js --network sepolia",
+    "ocr:balances:sepolia": "npx hardhat run scripts/check-transmitter-balances.js --network sepolia",
+    "solhint": "solhint ./contracts/**/*.sol",
+    "lint": "yarn solhint",
+    "migrate:dev": "npx truffle migrate --reset --network cldev",
+    "migrate:kovan": "npx truffle migrate --network kovan",
+    "test": "npx truffle test"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@chainlink/contracts": "^0.1.9",
+    "@openzeppelin/contracts": "^3.4.0",
+    "@remix-project/remixd": "^0.5.2",
+    "@truffle/hdwallet-provider": "^1.5.0",
+    "dotenv": "^8.2.0"
+  },
+  "devDependencies": {
+    "@chainlink/belt": "^0.0.3",
+    "@chainlink/test-helpers": "0.0.5",
+    "@nomicfoundation/hardhat-ethers": "^3.0.0",
+    "@openzeppelin/test-helpers": "^0.5.10",
+    "chai": "^4.3.0",
+    "depcheck": "^1.3.1",
+    "ethers": "^6.0.0",
+    "hardhat": "^2.27.1",
+    "solhint": "^3.3.2",
+    "truffle": "^5.3.1"
+  },
+  "resolutions": {
+    "**/minimist": "^0.2.1",
+    "**/node-fetch": "^2.6.1",
+    "**/yargs-parser": "^13.1.2",
+    "**/mem": "^4.0.0"
+  }
+}

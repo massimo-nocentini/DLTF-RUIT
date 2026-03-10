@@ -1,0 +1,63 @@
+{
+	"compiler": {
+		"version": "0.7.6+commit.7338295f"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "uint64",
+						"name": "id",
+						"type": "uint64"
+					},
+					{
+						"internalType": "int128",
+						"name": "data",
+						"type": "int128"
+					}
+				],
+				"name": "oraclesResult",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"interfaces/OCRCallback.sol": "OCRCallbackInterface"
+		},
+		"evmVersion": "istanbul",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"interfaces/OCRCallback.sol": {
+			"keccak256": "0x3dcb3396bc464c236ebf7a764e0b5f9e62120b42e25f1463ee6cf4b4d19dfb14",
+			"urls": [
+				"bzz-raw://b92466157d0374e173f3c128973cd8d2f6c1afb4a3c691686201b7d7d4791893",
+				"dweb:/ipfs/QmUQmRyWDV9wazkrmq8gZCEtQGnW93ESi427b4vgTHAGHG"
+			]
+		}
+	},
+	"version": 1
+}

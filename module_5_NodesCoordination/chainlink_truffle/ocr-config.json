@@ -1,0 +1,41 @@
+{
+  "oracles": [
+    {
+      "peerID": "12D3KooWFgz6ct88bfsspqPHKtegFyVikCNvuy1h4ADkJbjm8z4X",
+      "onChainSigningAddress": "0xf1b9ec76ac57b3259172318832ba35cb7e3b0346",
+      "transmitAddress": "0x0b8cDAAd06Ca2cc92bb676E1106EA415d81dda2A",
+      "offchainPublicKey": "e4a2d79069dd8ef05993387d9b6f8b2001b6b8ca375056b428f5d7fd097657c4",
+      "sharedSecretEncryptionPublicKey": "e004ef5d655ff608834ad48414bc2b708981916d71679862db93b9305e915b53"
+    },
+    {
+      "peerID": "12D3KooWCBEapfdKXemFt1vgAFwDYBhzHtjPxSwLfFVamQ4UZntP",
+      "onChainSigningAddress": "0x60f25227afa2df4fede3c4d3839052337d3a3064",
+      "transmitAddress": "0x7Ff9B2326914bf4156b9eEF67e9ffB4001d70F66",
+      "offchainPublicKey": "38547eb8bb8a1cbc1d16df16ee9620f1006d359328250f80683986a4902d5252",
+      "sharedSecretEncryptionPublicKey": "533a7c6188a45a7cf9836263cbb83923d8e6038f53c479ef9cced6bd2d3be012"
+    },
+    {
+      "peerID": "12D3KooWB58byZ6DEfZCJMmqYMpeCtjy9zpT5nEakC2WAFWnTy8N",
+      "onChainSigningAddress": "0x3bb54e02c5960fb5d31a60c7ed311055e1a47aae",
+      "transmitAddress": "0x87991aFbF3e371E71ec296A66b80aec247c9267d",
+      "offchainPublicKey": "7f41858726c9157852e0f6a2ef765150dd7174c01cd3cd45e3658693324296e2",
+      "sharedSecretEncryptionPublicKey": "4e3da7df793b29dadbca357687452c696e1e10ae0567c2f8b8f95245b6e0620d"
+    },
+    {
+      "peerID": "12D3KooWERPd3VLVVUWQ3HRs8BBro8ft5u9J6xHMhHX1vQwErzV3",
+      "onChainSigningAddress": "0xa69f5bc89bf70f7e290bfba647759127fafe7fa9",
+      "transmitAddress": "0xFa571C2CB74Aca79eBE4C7f49aBe3655Fa3F976C",
+      "offchainPublicKey": "a4a3aa145cb8b4b087911ca67dda1cb4d60b6f240083adc975d62fc78b884ddb",
+      "sharedSecretEncryptionPublicKey": "ce5e4a7c27abe1cb66614a8b343139f6a97179ea2ccf910fd480cdb0c4263819"
+    }
+  ],
+  "deltaProgressSeconds": 30,
+  "deltaResendSeconds": 20,
+  "deltaRoundSeconds": 20,
+  "deltaGraceSeconds": 2,
+  "deltaStageSeconds": 10,
+  "alpha": 1,
+  "rMax": 5,
+  "f": 1,
+  "transmitDelays": [1, 1, 1, 1]
+}

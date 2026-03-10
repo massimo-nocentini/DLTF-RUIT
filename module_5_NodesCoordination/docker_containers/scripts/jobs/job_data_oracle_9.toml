@@ -1,0 +1,31 @@
+
+type = "directrequest"
+schemaVersion = 1
+name = "Data Fetcher"
+externalJobID = "142ff888-5ecb-4152-a449-69de0b419e9e"
+minContractPaymentLinkJuels = "100000000000000000" 
+contractAddress = "0x044ba908a2EdF38D5698fab6aE1c219Caab7e1EA"
+maxTaskDuration = "30s"
+observationSource = """
+
+    // First, we parse the request log and the CBOR payload inside of it
+    decode_log   [type="ethabidecodelog" 
+                            data="$(jobRun.logData)"
+                            topics="$(jobRun.logTopics)"
+                            abi="OracleRequest(bytes32 indexed specId,address requester,bytes32 requestId,uint256 payment,address callbackAddr,bytes4 callbackFunctionId,uint256 cancelExpiration,uint256 dataVersion,bytes data)"]
+
+    decode_cbor  [type="cborparse" data="$(decode_log.data)"] 
+
+    eth_spent          [type=http method=POST url="http://10.5.0.6:3000/getSavedData" requestData="{ \\"hash\\": $(decode_cbor.hash), \\"rid\\": $(decode_cbor.rid), \\"oid\\": \\"0x150359818f0B2a0B3b0DBE0805131BD1FF49C9e9\\"}" allowUnrestrictedNetworkAccess=true]
+
+    encode_mwr [type="ethabiencode"
+                abi="(bytes32 requestID, uint256 amount, address sender, uint64 queueID)"
+                data="{\\"requestID\\": $(decode_log.requestId), \\"amount\\": $(eth_spent), \\"sender\\": \\"0x150359818f0B2a0B3b0DBE0805131BD1FF49C9e9\\", \\"queueID\\": $(decode_cbor.rid)}"]
+
+    encode_tx    [type="ethabiencode"
+                 abi="fulfillOracleRequest2(bytes32 requestId, uint256 payment, address callbackAddress, bytes4 callbackFunctionId, uint256 expiration, bytes calldata data)"
+                 data="{\\"requestId\\": $(decode_log.requestId), \\"payment\\": $(decode_log.payment), \\"callbackAddress\\": $(decode_log.callbackAddr), \\"callbackFunctionId\\": $(decode_log.callbackFunctionId), \\"expiration\\": $(decode_log.cancelExpiration), \\"data\\": $(encode_mwr)}" ]
+
+  submit_tx  [type="ethtx" to="0x044ba908a2EdF38D5698fab6aE1c219Caab7e1EA" data="$(encode_tx)"]
+  decode_log -> decode_cbor -> eth_spent -> encode_mwr -> encode_tx -> submit_tx
+"""

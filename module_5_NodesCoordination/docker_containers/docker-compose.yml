@@ -1,0 +1,203 @@
+version: "2"
+
+services:
+
+  postgres_node1:
+    image: postgres:13
+    command: postgres -c 'max_connections=200'
+    container_name: postgres_node1
+    env_file: postgres.env
+    ports:
+      - 5436:5432
+    volumes:
+      - ./volumes/db-data-node1:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      chainlink_net:
+        ipv4_address: 10.5.0.2
+
+  postgres_node2:
+    image: postgres:13
+    command: postgres -c 'max_connections=200'
+    container_name: postgres_node2
+    env_file: postgres.env
+    environment:
+      - POSTGRES_DB=chainlink2
+    ports:
+      - 5433:5432
+    volumes:
+      - ./volumes/db-data-node2:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      chainlink_net:
+        ipv4_address: 10.5.0.8
+
+  postgres_node3:
+    image: postgres:13
+    command: postgres -c 'max_connections=200'
+    container_name: postgres_node3
+    env_file: postgres.env
+    environment:
+      - POSTGRES_DB=chainlink3
+    ports:
+      - 5434:5432
+    volumes:
+      - ./volumes/db-data-node3:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      chainlink_net:
+        ipv4_address: 10.5.0.9
+
+  postgres_node4:
+    image: postgres:13
+    command: postgres -c 'max_connections=200'
+    container_name: postgres_node4
+    env_file: postgres.env
+    environment:
+      - POSTGRES_DB=chainlink4
+    ports:
+      - 5435:5432
+    volumes:
+      - ./volumes/db-data-node4:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      chainlink_net:
+        ipv4_address: 10.5.0.10
+        
+
+  chainlink_node1:      
+    image: ferru97/chainlink-diabolik:local
+
+    container_name: chainlink_node1
+    command: chainlink node start -p /chainlink/.password -a /chainlink/.api
+    env_file:
+      - ./chainlink.env
+    environment:
+      - DATABASE_URL=postgresql://chainlink:chainlink123@postgres_node1:5432/chainlink?sslmode=disable
+      - PEER_ID=p2p_12D3KooWALTnn7MtMcwhvYbZ4m5W6f7pKDFJGjHnQJyGX1d4RUHe
+      - CHAINLINK_PORT=6691
+      - CLIENT_NODE_URL=http://localhost:6691
+    ports:
+      - 6691:6691
+    volumes:
+      - ./volumes/chainlink1:/chainlink
+      - ./scripts/chainlink_login.sh:/home/root/chainlink_login.sh
+      - ./scripts/chainlink_delete_job.sh:/home/root/chainlink_delete_job.sh
+      - ./scripts/jobs/job_ocr_sum_oracle_1.toml:/home/root/ocr_job.toml
+      - ./scripts/jobs/job_data_oracle_1.toml:/home/root/data_job.toml
+      - ./scripts/jobs/bootstrap_sum_job.toml:/home/root/bootstrap_job.toml
+    links:
+      - "postgres_node1"
+    restart: unless-stopped
+    networks:
+      chainlink_net:
+        ipv4_address: 10.5.0.3
+
+
+  chainlink_node2:
+    image: ferru97/chainlink-diabolik:local
+
+    container_name: chainlink_node2
+    command: chainlink node start -p /chainlink/.password -a /chainlink/.api
+    env_file:
+      - ./chainlink.env
+    environment:
+      - DATABASE_URL=postgresql://chainlink:chainlink123@postgres_node2:5432/chainlink2?sslmode=disable
+      - CHAINLINK_PORT=6692
+      - CLIENT_NODE_URL=http://localhost:6692
+    ports:
+      - 6692:6692
+    volumes:
+      - ./volumes/chainlink2:/chainlink
+      - ./scripts/chainlink_login.sh:/home/root/chainlink_login.sh
+      - ./scripts/chainlink_delete_job.sh:/home/root/chainlink_delete_job.sh
+      - ./scripts/jobs/job_ocr_sum_oracle_2.toml:/home/root/ocr_job.toml
+      - ./scripts/jobs/job_data_oracle_2.toml:/home/root/data_job.toml
+    links:
+      - "postgres_node2"
+    restart: unless-stopped
+    networks:
+      chainlink_net:
+        ipv4_address: 10.5.0.4
+
+
+  chainlink_node3:
+    image: ferru97/chainlink-diabolik:local
+
+    container_name: chainlink_node3
+    command: chainlink node start -p /chainlink/.password -a /chainlink/.api
+    env_file:
+      - ./chainlink.env
+    environment:
+      - DATABASE_URL=postgresql://chainlink:chainlink123@postgres_node3:5432/chainlink3?sslmode=disable
+      - CHAINLINK_PORT=6693
+      - CLIENT_NODE_URL=http://localhost:6693
+    ports:
+      - 6693:6693
+    volumes:
+      - ./volumes/chainlink3:/chainlink
+      - ./scripts/chainlink_login.sh:/home/root/chainlink_login.sh
+      - ./scripts/chainlink_delete_job.sh:/home/root/chainlink_delete_job.sh
+      - ./scripts/jobs/job_ocr_sum_oracle_3.toml:/home/root/ocr_job.toml
+      - ./scripts/jobs/job_data_oracle_3.toml:/home/root/data_job.toml
+    links:
+      - "postgres_node3"
+    restart: unless-stopped
+    networks:
+      chainlink_net:
+        ipv4_address: 10.5.0.5
+
+
+  chainlink_node4:
+    image: ferru97/chainlink-diabolik:local
+
+    container_name: chainlink_node4
+    command: chainlink node start -p /chainlink/.password -a /chainlink/.api
+    env_file:
+      - ./chainlink.env
+    environment:
+      - DATABASE_URL=postgresql://chainlink:chainlink123@postgres_node4:5432/chainlink4?sslmode=disable
+      - CHAINLINK_PORT=6694
+      - CLIENT_NODE_URL=http://localhost:6694
+    ports:
+      - 6694:6694
+    volumes:
+      - ./volumes/chainlink4:/chainlink
+      - ./scripts/chainlink_login.sh:/home/root/chainlink_login.sh
+      - ./scripts/chainlink_delete_job.sh:/home/root/chainlink_delete_job.sh
+      - ./scripts/jobs/job_ocr_sum_oracle_4.toml:/home/root/ocr_job.toml
+      - ./scripts/jobs/job_data_oracle_4.toml:/home/root/data_job.toml
+    links:
+      - "postgres_node4"
+    restart: unless-stopped
+    networks:
+      chainlink_net:
+        ipv4_address: 10.5.0.7
+
+
+    
+  web_server:
+    build:
+      context: web_server/
+      dockerfile: Dockerfile
+    image: web_server
+    container_name: web_server
+    environment:
+      - NUMBER_SERVICE_VALUES=1,2,3,4
+    ports:
+      - "3001:3000"
+    restart: unless-stopped
+    networks:
+      chainlink_net:
+        ipv4_address: 10.5.0.6
+    
+
+      
+networks:
+  chainlink_net:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.5.0.0/16
+         gateway: 10.5.0.1
+      

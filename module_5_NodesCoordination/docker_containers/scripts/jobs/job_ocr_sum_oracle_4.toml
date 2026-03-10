@@ -1,0 +1,32 @@
+type = "offchainreporting"
+schemaVersion = 1
+contractAddress = "0x99Dca838d573a2Bfdf0919AE5f76beC0f475a84c"
+p2pPeerID = "12D3KooWERPd3VLVVUWQ3HRs8BBro8ft5u9J6xHMhHX1vQwErzV3"
+p2pBootstrapPeers = [
+"/ip4/10.5.0.3/tcp/3002/p2p/12D3KooWFgz6ct88bfsspqPHKtegFyVikCNvuy1h4ADkJbjm8z4X"
+]
+isBootstrapPeer = false
+keyBundleID = "0f9d74f5f369f2e83db94905d4b37f18694cb86ced1f66a7916afe005a41bdbf"
+transmitterAddress = "0xFa571C2CB74Aca79eBE4C7f49aBe3655Fa3F976C"
+observationTimeout = "20s"
+blockchainTimeout = "20s"
+contractConfigTrackerSubscribeInterval = "2m0s"
+contractConfigTrackerPollInterval = "1m0s"
+contractConfigConfirmations = 1
+observationSource = """
+    numbers      [type=http method=GET url="http://10.5.0.6:3000/numbers" allowUnrestrictedNetworkAccess=true]
+    rid          [type=jsonparse path="rid"]
+    values       [type=jsonparse path="values"]
+    sum_values   [type=sum values="$(values)"]
+    rid_scaled   [type=multiply input="$(rid)" times=18446744073709551616]
+    encoded      [type=sum values="[ $(rid_scaled), $(sum_values) ]"]
+
+    numbers -> rid
+    numbers -> values -> sum_values
+    rid -> rid_scaled
+    rid_scaled -> encoded
+    sum_values -> encoded
+    encoded
+"""
+maxTaskDuration = "0s"
+externalJobID = "a2fdb0c9-0a63-4d27-b0a2-dc7dd2c6d56a"
