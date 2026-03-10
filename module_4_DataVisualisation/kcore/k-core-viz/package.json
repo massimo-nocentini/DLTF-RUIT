@@ -1,0 +1,14 @@
+{
+  "name": "b5e14db77ba4ee9a",
+  "main": "b5e14db77ba4ee9a@1591.js",
+  "version": "1591.0.0",
+  "homepage": "https://observablehq.com/d/b5e14db77ba4ee9a",
+  "author": {
+    "name": "kleem",
+    "url": "https://observablehq.com/@kleem"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@observablehq/runtime": "4 - 5"
+  }
+}
