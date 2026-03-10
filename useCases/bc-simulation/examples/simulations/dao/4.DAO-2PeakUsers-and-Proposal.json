@@ -1,0 +1,95 @@
+{
+  "entities": [
+    "user",
+    "proposal",
+    "vote"
+  ],
+  "events": [
+    {
+      "eventName": "createUser",
+      "description": "",
+      "instanceOf": "user",
+      "dependencies": [
+        {
+          "dependOn": null,
+          "maxProbabilityMatches": null,
+          "probabilityDistribution": {
+            "type": "GARTNER_SASAKI",
+            "A": 0.413,
+            "B": 4,
+            "C": 0.00011,
+            "D": 0.9,
+            "E": 0.000013,
+            "F": 72000,
+            "G": 0.41,
+            "H": 0.000127,
+            "I": 197000,
+            "scalingFactor": 0.32
+          }
+        }
+      
+      ],
+      "gasCost": 80000,
+      "relatedEvents": null
+    },
+    {
+      "eventName": "createProposal",
+      "description": "",
+      "instanceOf": "proposal",
+      "dependencies": [
+        {
+          "dependOn": "user",
+          "maxProbabilityMatches": null,
+          "probabilityDistribution": {
+            "type": "NORMAL_SCALED",
+            "mean": 2000,
+            "std": 150,
+            "scalingFactorX": 0.01,
+            "scalingFactorY": 1
+          }
+        }
+      ],
+      "gasCost": 210000,
+      "relatedEvents": null
+    },
+    {
+      "eventName": "vote",
+      "description": "",
+      "instanceOf": "vote",
+      "dependencies": [
+        {
+          "dependOn": "proposal",
+          "maxProbabilityMatches": "#user",
+          "probabilityDistribution": {
+            "type": "GARTNER_SASAKI",
+            "A": 0.8,
+            "B": 4,
+            "C": 0.0001,
+            "D": 0.9,
+            "E": 0.000006,
+            "F": 222000,
+            "G": 0.19,
+            "H": 0.00014,
+            "I": 269000,
+            "scalingFactor": 0.474
+          }
+        },
+        {
+          "dependOn": "user",
+          "maxProbabilityMatches": null,
+          "probabilityDistribution": {
+            "type": "UNIFORM",
+            "value": 0.2
+          }
+        }
+      ],
+      "gasCost": 100000,
+      "relatedEvents": null
+    }
+  ],
+  "name": "4.DAO-2PeakUsers-and-Proposal",
+  "description": "",
+  "numAggr": 3600,
+  "maxTime": 1209600,
+  "numRuns": "5"
+}

@@ -1,0 +1,61 @@
+{
+  "entities": [
+    "user",
+    "proposal"
+  ],
+  "events": [
+    {
+      "eventName": "createUser",
+      "instanceOf": "user",
+      "dependencies": [{
+      "dependOn": null,
+      "probabilityDistribution": {
+        "type": "UNIFORM",
+        "value": 0.0001
+      }],
+      "gasCost": 60000
+    },
+    {
+      "eventName": "createProposal",
+      "instanceOf": "proposal",
+      "dependOn": "user",
+      // User oppure globale cioe non dipende da nessun altro evento
+      "probabilityDistribution": {
+        "type": "UNIFORM",
+        "value": 0.0001
+      },
+      "gasCost": 567890
+    },
+    {
+      "eventName": "vote",
+      "description": "Creazione di una proposta con successo ",
+      "instanceOf": null,
+      "dependencies": [
+        {
+          "dependOn": "proposal",
+          "maxProbabilityMatches": "#user",
+          // indica il numero di utenti "user" in quel momento
+          "probabilityDistribution": {
+            "type": "UNIFORM",
+            "value": 0.0001
+          }
+        },
+        {
+          "dependOn": "user",
+          "probabilityDistribution": {
+            "type": "UNIFORM",
+            "value": 0.0001
+          }
+        }
+      ],
+
+
+      "gasCost": 567890
+    }
+
+  ],
+  "name": "CryptoKitties_v1",
+  "numAggr": 1,
+  "maxTime": 86400,
+  "numRuns": "5"
+}
