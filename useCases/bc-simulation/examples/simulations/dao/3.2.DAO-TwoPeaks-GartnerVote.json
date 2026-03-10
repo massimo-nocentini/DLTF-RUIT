@@ -1,0 +1,89 @@
+{
+  "entities": [
+    "user",
+    "proposal",
+    "vote"
+  ],
+  "events": [
+    {
+      "eventName": "createUser",
+      "description": "",
+      "instanceOf": "user",
+      "dependencies": [
+        {
+          "dependOn": null,
+          "maxProbabilityMatches": null,
+          "probabilityDistribution": {
+            "type": "GARTNER_SASAKI",
+            "A": 0.413,
+            "B": 4,
+            "C": 0.00011,
+            "D": 0.9,
+            "E": 0.000013,
+            "F": 72000,
+            "G": 0.41,
+            "H": 0.000127,
+            "I": 197000,
+            "scalingFactor": 0.32
+          }
+        }
+      
+      ],
+      "gasCost": 80000
+    },
+    {
+      "eventName": "createProposal",
+      "description": "",
+      "instanceOf": "proposal",
+      "dependencies": [
+        {
+          "dependOn": "user",
+          "maxProbabilityMatches": null,
+          "probabilityDistribution": {
+            "type": "UNIFORM",
+            "value": 0.00017
+          }
+        }
+      ],
+      "gasCost": 210000
+    },
+    {
+      "eventName": "vote",
+      "description": "",
+      "instanceOf": "vote",
+      "dependencies": [
+        {
+          "dependOn": "proposal",
+          "maxProbabilityMatches": "#user",
+          "probabilityDistribution": {
+            "type": "UNIFORM",
+            "value": 0.2329
+          }
+        },
+        {
+          "dependOn": "user",
+          "maxProbabilityMatches": null,
+          "probabilityDistribution": {
+            "type": "GARTNER_SASAKI",
+            "A": 0.473,
+            "B": 1,
+            "C": 0.00008,
+            "D": 0.2,
+            "E": 0.000012,
+            "F": 90000,
+            "G": 0.5,
+            "H": 0.0001,
+            "I": 273000,
+            "scalingFactor": 0.418
+          }
+        }
+      ],
+      "gasCost": 100000
+    }
+  ],
+"name": "3.2.DAO-TwoPeaks-GartenerVote",
+"description": "",
+  "numAggr": 3600,
+  "maxTime": 1209600,
+  "numRuns": "5"
+}
