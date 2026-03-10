@@ -1,42 +1,27 @@
 # API
 
-This is the API folder for the BC Simulation project.
+This folder contains the backend services for the SESAME project.
 
-## Folders
+## Active backend
 
-The API folder contains the following folders:
+The active backend is the Spring Boot application in [springBoot-simulator](/Users/francesco/workspace/git/PHD/DLTF-RUIT/useCases/sesame/api/springBoot-simulator).
 
-- `/libs`: contains the API executable (`NMTSimulation.jar`) for the BC Simulation project.
-
-## Endpoints
-
-The API endpoints are as follows:
-
-- `/simulation`: This endpoint returns the BC Simulation.
-
-## Usage
-
-To use the API, you can make a GET request to the `/simulation` endpoint 
-<!-- with the following parameters: -->
-
-<!-- - `/simulation?n=10&m=5&p=0.5&q=0.5`: This endpoint returns the BC Simulation with the given parameters. -->
-
-## Example
-
-To run the API, you can use the following command:
+Run it with:
 
 ```bash
-node api/server.js
+cd api/springBoot-simulator
+./mvnw spring-boot:run
 ```
 
-This will start the API server on port 3000.
+The service starts on port `8099`.
 
-You can then make a GET request to the `/simulation` endpoint with the following parameters:
+## Main endpoints
 
-```bash
-# curl http://localhost:3000/simulation?n=10&m=5&p=0.5&q=0.5 
-curl http://localhost:3000/simulation 
+- `POST /newsimulation`
+- `GET /results/charts/**`
+- `GET /results/csv/**`
 
-```
+## Notes
 
-This will return the BC Simulation.
+- The legacy Node wrapper and prebuilt jar are no longer part of the supported runtime flow.
+- Backend validation and packaging are handled through Maven in `springBoot-simulator`.
