@@ -2,7 +2,7 @@
 
 https://observablehq.com/d/b5e14db77ba4ee9a@1591
 
-Example visualizations:
+Examples of resulting visualizations of graphs with varying dimension and structure:
 
 <img width="1718" height="1697" alt="example" src="https://github.com/user-attachments/assets/0db9be80-b55c-4316-bcaa-0ba07b53514b" />
 
